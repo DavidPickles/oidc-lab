@@ -2,7 +2,7 @@
 
 ![Baily the Golden Labrador Retriever](./img/lab-screenshot-0.jpg)
 
-This app demonstrates and tests OpenId Providers. See https://bighandwiki.atlassian.net/wiki/spaces/IAA/pages/3628105973/An+Overview+of+OAuth+and+OIDC
+OIDC-Lab is a configurable OAuth2 client which can be used to demonstrate and test [OAuth2 authorization servers and OpenId Providers](). 
 
 ## System Requirements
 
@@ -11,82 +11,50 @@ This app demonstrates and tests OpenId Providers. See https://bighandwiki.atlass
 
 Tested with Node v17, v18 and v19; it'll probably work with earlier versions too. 
 
-## Common Set-up
+## Install
 
 ```
-git clone https://bighand@dev.azure.com/bighand/BigHand/_git/Research_Identity
-cd Research_Identity/OIDC-Lab
+git clone https://github.com/DavidPickles/oidc-lab.git
+cd oidc-lab
 npm install
 ```
 
-## Configuration files
+## Configure and test
 
-Configuration files are .env files in sub-directories of  configs/.
+OIDC-Lab is a configurable OAuth2 client. Configuration files are .env files in sub-folders of the configs folder. You  manage your own configurations in configs, but two sample .env templates are provided to show how things work.  Both samples connect to [Duende's Public Demo Server](https://demo.duendesoftware.com/); one sample demonstrates OIDC Authorization Code Flow, the other demonstrates OAuth2 Client Credentials Flow. 
 
-Because .env files typically contain secrets they, must not be stored in the code repo. They are excluded by a .gitignore rule. 
-
-Sample .env files (without secrets) are in env.template files. 
-
-## Try it with Duende's Public Demo OpenId Provider
-
-### 1. Configuration
-
-Create a .env file in configs/duende-demo-server
+### 1. Configure
 
 ```
-cp configs/duende-demo-server/env.template configs/duende-demo-server/.env
+mkdir configs
 ```
 
-Add a cookie secret (anything you want), and a client secret. Duende's public demo advertises its secret, it is `secret`. So the .env file will look like this:
+Then copy the folders in config-samples/ to configs/. 
 
 ```
-COOKIE_SECRET="something secret"
-CLIENT_SECRET="secret"
-
-ISSUER="https://demo.duendesoftware.com"
-
-CLIENT_ID="interactive.confidential"
-OTHER_PARAMS=""
-
-SCOPE="openid email profile"
-
-BASE_URL='http://example1.internal:9023'
-APP_TITLE="Duende Demo Server"
-SPIEL="Uses Duende's Demo Server at https://demo.duendesoftware.com as an OpenId Provider"
-
-API_ENDPOINT_1="https://demo.duendesoftware.com/connect/userinfo"
+cp -r config-samples/* configs
 ```
 
-### 2. Edit your hosts file
-
-The .env file assumes that the OIDC-Lab app is running on 'http://example1.internal:9023. 
-
-On Windows, the hosts file is at:
+You now have two folders containing .env  files. 
 
 ```
-C:\Windows\System32\drivers\etc\hosts
+configs/duende-demo-server
+   .env
+configs/m2m-deunde-demo-server
+   .env
 ```
 
-On a mac:
+In general it's bad practice to store .env files in source control because they contain secrets. However Duende's public demo advertises its client secret; so in this case it really isn't secret at all. 
 
-```
-/etc/hosts
-```
 
-You need to add a line:
-
-```
-127.0.0.1     example1.internal
-```
-
-### 3. Run the app
+### 2. Run the OIDC app
 
 ```
 node ./server.js "duende-demo-server"
 ```
 
-### 4. Browse 
-Then point your browser at http://example1.internal:9023. You should see something like this:
+### 3. Browse 
+Then point your browser at http://localhost:9023. You should see something like this:
 
 ![Home page](./img/lab-screenshot-1.png)
 
@@ -107,6 +75,36 @@ The logout feature of OIDC-Lab is limited.
 Cookies tend to be used extensively by OPs to represent a users logged-in state. 
 
 When you're exploring OPs it can be hard to keep track of which users are logged in, so it can be useful to be able to just remove all potentially relevant cookies. For that reason it is generally a good idea to use private browsing or incognito mode, because you'll always start with no cookies set.
+
+## Using your own configuration repo
+
+You can use your own repo in the configs folder. However because .env files typically contain secrets they, must not be stored in the code repo. They are excluded by a .gitignore rule.
+
+It is good practice to store the configurations as env.template files, with client and cookie secrets removed. 
+
+## Hosts other than localhost
+
+Localhost can behave differently in some contexts than other domain names, so you might wish to use an alternative. This means changing your local hosts file. 
+
+On Windows, the hosts file is at:
+
+```
+C:\Windows\System32\drivers\etc\hosts
+```
+
+On a mac:
+
+```
+/etc/hosts
+```
+
+You need to add a line such as:
+
+```
+127.0.0.1     example1.internal
+```
+
+This will mean that OIDC-Lab can run on example1.internal. You'll need to change BASE_URL in the .env file to use this domain. 
 
 ## Reference for .env files
 
