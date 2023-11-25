@@ -1,0 +1,92 @@
+body {
+  background-color: white;
+  margin: 0;
+  font-family: 'Nexus Sans', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  height: 100vh;
+  box-sizing: border-box;
+  padding: 1em;
+  display: grid;
+  grid-gap: 0.5em;
+  grid-template-columns: 1fr 4fr;
+  grid-template-rows: 3.2em 20fr 1fr;
+  grid-template-areas:
+      "header header"
+      "sidebar content"
+      "footer footer";
+}
+
+button {
+  font-family: 'Nexus Sans', sans-serif;
+  padding: 0.3em 0.8em;
+  font-size: inherit;
+}
+
+#login {
+  background-color: #acf191;
+}
+
+.codey {
+  white-space: pre-wrap;
+  word-break: break-all;
+  font-family: Consolas, 'Courier New', monospace;
+}
+
+header, nav, main, footer {
+  border: 1px solid lightgrey;
+}
+
+header, footer {
+  padding: 0.5em;
+}
+
+main, nav {
+  padding: 1em;
+}
+
+nav a {
+  display: block;
+  padding-bottom: 0.3em;
+}
+
+a {
+  color: darkblue;
+  text-decoration: inherit;
+}
+
+a:hover {
+  cursor: pointer;
+  color: blue;
+  text-decoration: underline;
+}
+
+header {
+  grid-area: header;
+  background-color: antiquewhite;
+}
+
+main {
+  grid-area: content;
+  overflow: auto;
+}
+
+footer {
+  grid-area: footer;
+  background-color: antiquewhite;
+}
+
+#access-token {
+  width: 100%;
+  min-height: 10em;
+}
+
+.logo {
+  margin-left: 1em;
+  margin-right: 2em;
+}
+
+em {
+  font-weight: bolder;
+  font-style: normal;
+}

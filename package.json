@@ -1,0 +1,24 @@
+{
+  "name": "oidc-lab",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "sample oidc node web app",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^1.4.0",
+    "dotenv": "^6.2.0",
+    "ejs": "^3.1.3",
+    "express": "^4.16.4",
+    "express-async-errors": "^3.1.1",
+    "express-session": "^1.17.1",
+    "jsonwebtoken": "^9.0.2",
+    "jwks-rsa": "^3.1.0",
+    "morgan": "^1.9.1",
+    "pkce-challenge": "^4.0.1"
+  }
+}

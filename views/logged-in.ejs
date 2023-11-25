@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title><%= title %></title>
+    <link href="/public-common/default.css" rel="stylesheet">
+</head>
+<body>
+<header>
+    <a class='logo' href="<%= homePath %>"><%= title %></a>
+    <button id="logout" onclick="window.location = '/local-logout'">Local Logout</button>
+    <button onclick="copyToClipboard('access-token','message')">Copy Access Token</button>
+    <button onclick="window.location = '/refresh'" <%= refreshToken??'disabled' %>>Use Refresh Token</button>
+</header>
+<%
+function prettyURL(urlStr) {
+    const url = new URL(urlStr)
+    var s = url.origin + url.pathname + '\n'
+    params = url.searchParams
+    params.sort()
+    params.forEach( (value, key) => s += `${key} = ${value}\n` )
+    return s
+}
+
+function prettyReq(req) {
+    return JSON.stringify(req, null, 2)
+}
+
+function prettyMillis(millis) {
+    return new Date(millis).toString()
+}
+
+%>
+<nav>
+    <a href="#decoded-access-token-section">Decoded Access Token</a>
+    <a href="#decoded-id-token-section">Decoded ID Token</a>
+    <a href="#auth-req-section">Auth URL</a>
+    <a href="#callback-req-section">Callback URL</a>
+    <a href="#token-req-section">Token Request with Code</a>
+    <a href="#refresh-token-section">Refresh Token</a>
+    <a href="#refresh-token-req-section">Token Request with Refresh Token</a>
+    <a href="#raw-access-token-section">Raw Access Token</a>
+    <a href="#api1-response-section">API Response</a>
+</nav>
+<main>
+    <div id="decoded-access-token-section">
+        <h4>Access Token Data</h4>
+        <% if (accessTokenIsJwt) { %>
+        <div id="access-token-payload" class="codey"> <%= JSON.stringify(decodedAccessToken.payload, null, 2) %></div>
+        <p>
+            Access token is 
+            <%  if (accessTokenIsVerified) { %>
+                verified using key from <a href="<%= oidcProperties.jwksUri %>"><%= oidcProperties.jwksUri %></a>
+            <%  } else { %>
+                NOT verified
+            <%  } %>
+        </p>    
+        <% } else { %>
+        Access token is opaque    
+        <% } %>
+        <p>
+            Response says access token expires in: <%= accessTokenExpiresIn %> seconds (<%= accessTokenExpiresIn/3600 %> hours),<br>
+            so will expire at <%=  prettyMillis( accessTokenWasIssuedAtMillis + (accessTokenExpiresIn * 1000) )%>.<br>
+            <% if (accessTokenIsJwt) { %>
+                <b>iat</b> says issued at <%= prettyMillis( decodedAccessToken.payload.iat * 1000 ) %>.<br>
+                <b>exp</b> says expires at <%= prettyMillis( decodedAccessToken.payload.exp * 1000 ) %>.
+            <% } %>
+        </p>
+        <% if (accessTokenIsJwt) { %>
+        <h4>Access Token Header</h4>
+        <div id="access-token-header" class="codey"> <%= JSON.stringify(decodedAccessToken.header, null, 2) %> </div>
+        <% } %>
+    </div>
+    <div id="decoded-id-token-section">
+        <h4>Decoded ID Token</h4>
+        <div id="id-token-payload" class="codey"> <%= JSON.stringify(decodedIdToken.payload, null, 2) %></div>
+        <p>
+            <b>iat</b> says issued at <%= prettyMillis( decodedIdToken.payload.iat * 1000 ) %>.<br>
+            <b>exp</b> says expires at <%= prettyMillis( decodedIdToken.payload.exp * 1000 ) %>.
+        </p>
+        <p>
+            ID token is 
+            <%  if (idTokenIsVerified) { %>
+                verified using key from <a href="<%= oidcProperties.jwksUri %>"><%= oidcProperties.jwksUri %></a>
+            <%  } else { %>
+                NOT verified
+            <%  } %>
+        </p>
+
+        <h4>ID Token Header</h4>
+        <div id="id-token-header" class="codey"> <%= JSON.stringify(decodedIdToken.header, null, 2) %> </div>
+    </div>
+    <div id="auth-req-section">
+        <h4>Authentication (OAuth2 Authorize) URL</h4>
+        <div id="auth-req" class="codey"><%= prettyURL(authUrl) %></div>
+    </div>
+    <div id="callback-req-section">
+        <h4>Callback URL</h4>
+        <div id="callback-req" class="codey"><%= prettyURL(callbackUrl) %></div>
+    </div>
+    <div id="token-req-section">
+        <h4>Token Request with Code</h4>
+        <div id="token-req" class="codey"><%= prettyReq(tokenReq) %></div>
+    </div>
+    <div id="refresh-token-section">
+        <h4>Refresh Token</h4>
+        <div id="refresh-token" class="codey"><%= refreshToken ?? "No refresh token" %></div>
+    </div>
+    <div id="refresh-token-req-section">
+        <h4>The Last Token Request with a Refresh Token</h4>
+        <div id="refresh-token-req" class="codey"><%= refreshTokenReq ? prettyReq(refreshTokenReq) : "None" %></div>
+    </div>
+    <div id="raw-access-token-section">
+        <h4>Access Token</h4>
+        <div id="access-token" class="codey"><%= accessToken %></div>
+    </div>
+    <div id="api1-response-section">
+        <% for (let i=0; i<apiEndpoints.length; ++i) { %>
+            <h4>Endpoint <%= i+1 %></h4>
+            <div class="codey">Operation: GET <%= apiEndpoints[i] %></div>
+            <% if (endpointResps) { %>
+                <div class="codey"><%= JSON.stringify(endpointResps[i], null, 2) %> </div>
+            <% } else { %>
+                <div class="codey">NO RESPONSES</div>
+            <% } %>
+        <% } %>
+    </div>
+</main>
+<footer>
+    <div id="message"></div>
+</footer>
+</body>
+<script>
+    function copyToClipboard(idToCopy, idToNotify) {
+        // see https://www.30secondsofcode.org/blog/s/copy-text-to-clipboard-with-javascript
+        const textToCopy = document.getElementById(idToCopy).innerText
+        const taEl = document.createElement('textarea')
+        taEl.value = textToCopy
+        taEl.setAttribute('readonly', '')
+        taEl.style.position = 'absolute'
+        taEl.style.left = '-9999px'
+        document.body.appendChild(taEl)
+        taEl.select()
+        taEl.setSelectionRange(0, 99999) /*For mobile devices*/
+        document.execCommand('copy')
+        document.body.removeChild(taEl)
+        if (idToNotify) {
+            const elToNotify = document.getElementById(idToNotify)
+            elToNotify.innerHTML = 'Copied to clipboard!'
+        }
+    }
+</script>
+</html>
