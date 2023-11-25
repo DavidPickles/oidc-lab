@@ -22,7 +22,7 @@ const run = async ({configDirName}) => {
     dotenv.config({ path: `${configPath}/.env`})   
     const mode = process.env.MODE
     if (mode !== 'm2m' && mode !== 'oidc') {
-        console.error("No MODE in .env file")
+        console.error("MODE in .env file must be 'm2m' or 'oidc'")
         return
     }    
     await import(`./src/${mode}.js`)
