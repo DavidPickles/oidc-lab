@@ -49,13 +49,12 @@ configs/m2m-deunde-demo-server
 In general it's bad practice to store .env files in source control because they contain secrets. However Duende's public demo advertises its client secret; so in this case it really isn't secret at all. 
 
 
-### 2. Run the OIDC app
+### 2.Authorization Code Flow
 
 ```
-node ./server.js "duende-demo-server"
+node ./app.js "duende-demo-server"
 ```
 
-### 3. Browse 
 Then point your browser at http://localhost:9023. You should see something like this:
 
 ![Home page](./img/lab-screenshot-1.png)
@@ -69,6 +68,17 @@ The Duende log-in page tells you the username and passwords that are available.
 After you login, your page should look something like this:
 
 ![lab-screenshot](./img/lab-screenshot-3.png)
+
+### 4. Client Credentials Flow
+
+```
+node ./app.js "m2m-duende-demo-server"
+```
+
+This gets a token and shows it on the console. There is no user interaction. The output should look like this:
+
+![lab-screenshot](./img/lab-screenshot-4.png)
+
 
 ## Cookies and Logout
 
@@ -115,21 +125,22 @@ Note the use of IDP_BASE_URL, AUHTORIZE_PATH, and TOKEN_PATH are deprecated. ISS
 - Not every OP provides a discovery document. For those servers which don't, continue to use IDP_BASE_URL with TOKEN_PATH and AUTHORIZE_PATH. 
 - ISSUER and IDP_BASE_URL are exclusive. If you specify both you'll get an error. 
 - If you use IDP_BASE_URL:
-  - You must specify TOKEN_PATH and AUTHORIZE_PATH
+  - You must specify TOKEN_PATH (and AUTHORIZE_PATH if mode is oidc)
   - Token verification and potentially other features which rely on the discovery document won't be available.
 
-Parameter | Opt/Req | Meaning
+Parameter | Opt/Req| Meaning
 --|--|--
+MODE | Required | oidc or m2m
 CLIENT_ID | Required | A client id registered on the OP
 CLIENT_SECRET | Required if the registered client is confidential | The corresponding client secret
 ISSUER | Required if no IDP_BASE_URL | The domain of the OIDC discovery document 
 IDP_BASE_URL | Required if no ISSUER | Base URL of the OP
-AUTHORIZE_PATH | Required if IDP_BASE_URL | The path of authorization endpoint of the OP
+AUTHORIZE_PATH | Required if IDP_BASE_URL and MODE is oidc| The path of authorization endpoint of the OP
 TOKEN_PATH | Required if IDP_BASE_URL | The path of the token endpoint of the OP
 SCOPE | Required | Scope parameter to the authorization request. 
-APP_TITLE | Required | Title that will appear on the OIDC-Lab home page. 
-SPIEL | Required | A description that will appear on the OIDC-Lab home page. 
-API_ENDPOINT-\<n> | Optional | API Endpoints that will be called by OIDC-Lab with the access token as a bearer token.  Values of n can be 1-9.
+APP_TITLE | Optional | Title that will appear on the OIDC mode home page. 
+SPIEL | Optional | A description that will appear on the OIDC mode home page. 
+API_ENDPOINT-\<n> | Optional | API Endpoints that will be called with with the access token as a bearer token.  Values of n can be 1-9.
 BASE_URL | Required | The URL under which OIDC-Lab will run,
 CALL_BACK_PATH | Optional | By default the redirect_uri (OIDC callback) is `BASE_URL/oauth-callback`, but this parameter can be used to override it.
 COOKIE_SECRET | Required | Used for encrypting local session cookies. 

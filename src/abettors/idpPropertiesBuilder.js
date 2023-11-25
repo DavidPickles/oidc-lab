@@ -1,34 +1,45 @@
 import axios from 'axios'
 
-async function buildStaticProperties( { issuer, clientId, clientSecret, redirectUri, 
+async function buildStaticProperties( {  mode, issuer, clientId, clientSecret, redirectUri, 
                                     scope, otherParams, logoutPath, 
                                     idpBaseUrl, tokenPath, authorizationPath } ) {
 
+    if (mode !== 'm2m' && mode !== 'oidc') {
+        throw new Error("MODE must be 'm2m' or 'oidc'")
+    }
     if (!issuer && !idpBaseUrl ) {
         throw new Error("No ISSUER or no IDP_BASE_URL")
     }
     if (issuer && (tokenPath || authorizationPath)) {
         throw new Error("Give ISSUER  or token/authorization paths, not both")
     }
-    if (idpBaseUrl && !(tokenPath && authorizationPath)) {
-        throw new Error("IDP_BASE_URL needs both a TOKEN_PATH and AUTHORIZE_PATH")
+    if (mode === 'oidc') {
+        if (idpBaseUrl && !(tokenPath && authorizationPath)) {
+            throw new Error("In oidc mode, IDP_BASE_URL needs both a TOKEN_PATH and AUTHORIZE_PATH")
+        }
+    } else if (mode === 'm2m') {
+        if (idpBaseUrl && !(tokenPath)) {
+            throw new Error("In m2m mode, IDP_BASE_URL needs a TOKEN_PATH")
+        }
     }
 
     let oidcDiscoveryEndpoint = null
-    let oidcConfig = null
+    let idpConfig = null
     if ( issuer ) {
-        oidcConfig = await getDiscoveryData(issuer)
+        idpConfig = await getDiscoveryData(issuer)
     } else { // no issuer
         console.log("Warning NO ISSUER. Tokens will not be verified. OIDC discovery .well-known endpoint not used.")
-        oidcConfig = {
-            authorizationEndpoint: idpBaseUrl + authorizationPath,
+        idpConfig = {
             tokenEndpoint: idpBaseUrl + tokenPath
         }
+        if (mode === 'oidc') {
+            idpConfig.authorizationEndpoint = idpBaseUrl + authorizationPath
+        } 
     }
     return {
         issuer, oidcDiscoveryEndpoint,
         clientId, clientSecret, redirectUri, scope, otherParams, logoutPath,
-        ...oidcConfig,
+        ...idpConfig,
     }
 }
 

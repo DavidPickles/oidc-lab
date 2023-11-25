@@ -10,7 +10,7 @@ import pkceChallenge  from 'pkce-challenge'
 import utils from './abettors/utils.js'
 import apis from './abettors/apis.js'
 import urlBasedProps from './abettors/url-based-properties.js'
-import oidcPropertiesBuilder from './abettors/oidcPropertiesBuilder.js'
+import idpPropertiesBuilder from './abettors/idpPropertiesBuilder.js'
 import Verifier from './abettors/verifier.js'
 
 const app = express()
@@ -27,7 +27,8 @@ const appProperties = {
 }
 
 async function run() {
-    app.locals.oidcProperties = await oidcPropertiesBuilder.buildStaticProperties({
+    app.locals.oidcProperties = await idpPropertiesBuilder.buildStaticProperties({
+        mode: process.env.MODE,
         clientId: process.env.CLIENT_ID,
         clientSecret: process.env.CLIENT_SECRET,
         redirectUri: appProperties.callbackPath ? appProperties.baseUrl + appProperties.callbackPath : null,
@@ -191,7 +192,6 @@ async function verifyAndStoreTokens(tokens, store) {
             console.log(`${type} token verified`)
             store[type+'TokenIsVerified'] = true
             return decoded
-
         }
         console.log(`${type} token not verified`)
         store[type+'TokenIsVerified'] = false

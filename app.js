@@ -3,33 +3,28 @@ import { fileURLToPath } from 'url'
 import { existsSync } from 'fs';
 import dotenv from 'dotenv'
 
-const usage = () => console.log("Usage: node ./lab.js oidc|m2m <config dir>")
+const usage = () => console.log("Usage: node ./app.js <config dir>")
 
-if (process.argv.length !== 4) {
+if (process.argv.length !== 3) {
    usage()
-   process.exit(1)
+   process.exit(0)
 }
 
-const mode = process.argv[2]
-if (mode !== 'm2m' && mode !== 'oidc') {
-    usage()
-    process.exit(1)
- }
-
-const configDirName = process.argv[3]
-const configPath = path.join(
-    dirname(fileURLToPath(import.meta.url)), './configs', configDirName
-)
-if (!existsSync(configPath)) {
-    console.error(`No directory: ${configPath}`)
-    usage()
-    process.exit(1)
+const run = async ({configDirName}) => {
+    const configPath = path.join(
+        dirname(fileURLToPath(import.meta.url)), './configs', configDirName
+    )
+    if (!existsSync(configPath)) {
+        console.error(`No directory: ${configPath}`)
+        usage()
+        return
+    }
+    dotenv.config({ path: `${configPath}/.env`})   
+    const mode = process.env.MODE
+    if (mode !== 'm2m' && mode !== 'oidc') {
+        console.error("No MODE in .env file")
+        return
+    }    
+    await import(`./src/${mode}.js`)
 }
-
-dotenv.config({ path: `${configPath}/.env`})
-
-const run = async () => {
-    const module = {m2m: "./src/client-creds.js", oidc: "./src/server.js" }
-    await import(module[mode])
-}
-run()
+run({ configDirName: process.argv[2] })

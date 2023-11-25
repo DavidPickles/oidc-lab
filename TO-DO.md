@@ -1,5 +1,3 @@
-- Merge client-creds.js with server.js
-- Rename to oidclab.js
 - Enable configuration of location of server certificate and key
 - Change documentation to be clear that extra ca env variable only has to be set once
 - could location of extra ca be set in code?, or maybe in global config
