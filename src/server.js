@@ -1,5 +1,4 @@
 import 'express-async-errors'
-import configPath from './abettors/load-config.js'
 import path, { dirname } from 'path'
 import { fileURLToPath } from 'url'
 import express from 'express'
@@ -54,8 +53,8 @@ async function run() {
 }
 
 const myDir = dirname(fileURLToPath(import.meta.url))
-app.use('/public-common', express.static( path.join(myDir, 'public', 'common')))
-app.set('views', [path.join(configPath,'views'),  path.join(myDir, 'views')])
+app.use('/public-common', express.static( path.join(myDir, 'public')))
+app.set('views',  path.join(myDir, 'views'))
 app.set('view engine', 'ejs')
 
 app.use(async (req, res, next) => {
@@ -218,5 +217,4 @@ run().catch(err => {
     console.error(err);
     process.exit(1);
 })
-
 

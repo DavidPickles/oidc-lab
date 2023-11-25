@@ -1,4 +1,3 @@
-import './abettors/load-config.js'
 import axios from 'axios'
 import jwt from 'jsonwebtoken'
 
