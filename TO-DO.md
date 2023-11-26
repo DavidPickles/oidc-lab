@@ -1,6 +1,3 @@
-- document api endpoints in README.md
-- add api endpoints to cc flow
-- make internet ready
-  - add nonce and state
+
+- add nonce and state
 - add cookie lab and cors lab?
-- Put overviews of OIDC/OAuth2 and OAuth2 authz in doc folder
