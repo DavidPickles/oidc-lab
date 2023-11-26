@@ -2,7 +2,7 @@
 
 ![Baily the Golden Labrador Retriever](./img/lab-screenshot-0.jpg)
 
-OIDC-Lab is a configurable OAuth2 client which can be used to demonstrate and test [OAuth2 Authorization Servers and OpenId Providers](). 
+OIDC-Lab is a configurable OAuth2 client which can be used to demonstrate and test [OAuth2 Authorization Servers and OpenId Providers](docs/OAuth-OIDC-Overview.md). 
 
 **The code in this repo is for demonstration and testing purposes only it is not for production use.**
 
