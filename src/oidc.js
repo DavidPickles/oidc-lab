@@ -10,7 +10,7 @@ import pkceChallenge  from 'pkce-challenge'
 import utils from './abettors/utils.js'
 import apis from './abettors/apis.js'
 import urlBasedProps from './abettors/url-based-properties.js'
-import idpPropertiesBuilder from './abettors/idpPropertiesBuilder.js'
+import idpPropertiesBuilder from './abettors/idp-properties-builder.js'
 import Verifier from './abettors/verifier.js'
 
 const app = express()
@@ -22,6 +22,7 @@ const appProperties = {
     callbackPath: process.env.CALLBACK_PATH ?? '/oauth-callback',
     apiEndpoints: apis.getApiEndpoints(),
     homePath: process.env.HOME_PATH ?? '/',
+    certsFolder: process.env.CERTS_FOLDER ?? './certs',
     title: process.env.APP_TITLE ?? 'No Name',
     spiel: process.env.SPIEL ??  ''
 }
@@ -44,7 +45,9 @@ async function run() {
     })  
     app.locals.verifier = new Verifier(app.locals.oidcProperties.jwksUri)
     const baseUrl = new URL(appProperties.baseUrl)
-    const server = baseUrl.protocol === 'https:' ? https.createServer( urlBasedProps.getKeyAndCert(configPath, baseUrl), app) : http.createServer(app)
+    const server = baseUrl.protocol === 'https:' ? 
+        https.createServer( urlBasedProps.getKeyAndCert(appProperties.certsFolder, baseUrl), app ) : 
+        http.createServer( app )
     server.listen(urlBasedProps.getPortForListening(baseUrl), () => {
         console.log("Token Issuer:", app.locals.oidcProperties.issuer)
         console.log("Authorization Endpoint:", app.locals.oidcProperties.authorizationEndpoint)
@@ -183,7 +186,6 @@ app.get('/logout', async (req,res) => {
     req.session.destroy( () => res.redirect(logoutUrl) )
 })
 
-
 async function verifyAndStoreTokens(tokens, store) {
     const unpack = async (type) => {
         const token = tokens[type+'_token']
@@ -192,10 +194,11 @@ async function verifyAndStoreTokens(tokens, store) {
             console.log(`${type} token verified`)
             store[type+'TokenIsVerified'] = true
             return decoded
+        } else {
+            console.log(`${type} token not verified`)
+            store[type+'TokenIsVerified'] = false
+            return app.locals.verifier.decode(token, { complete: true })
         }
-        console.log(`${type} token not verified`)
-        store[type+'TokenIsVerified'] = false
-        return app.locals.verifier.decode(token, { complete: true })
     } 
     // console.log('Tokens', tokens)
     store.accessTokenIsJwt = app.locals.verifier.isJwt(tokens.access_token)

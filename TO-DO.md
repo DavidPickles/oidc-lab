@@ -1,7 +1,5 @@
-- Enable configuration of location of server certificate and key
-- Change documentation to be clear that extra ca env variable only has to be set once
-- could location of extra ca be set in code?, or maybe in global config
-- global config could also be used for mapping from domain names server certificates and keys 
+- make internet ready
+  - add nonce and state
 - add cookie lab and cors lab?
 - document api endpoints in README.md
 - Put overviews of OIDC/OAuth2 and OAuth2 authz in doc folder

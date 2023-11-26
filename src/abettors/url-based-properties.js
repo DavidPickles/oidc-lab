@@ -12,12 +12,12 @@ function getPortForListening(baseUrl) {
     }
 }
 
-function getKeyAndCert(configDir, baseUrl) {
+function getKeyAndCert(certsFolder, baseUrl) {
     if (baseUrl.protocol !== 'https:') {
         throw new Error(`${baseUrl} is not https, no Key and Cert files needed`)
     }
-    const keyFileName = `${configDir}/${baseUrl.hostname}-key.pem`
-    const certFileName = `${configDir}/${baseUrl.hostname}.pem`
+    const keyFileName = `${certsFolder}/${baseUrl.hostname}-key.pem`
+    const certFileName = `${certsFolder}/${baseUrl.hostname}.pem`
     return {
             key: fs.readFileSync(keyFileName, "utf-8"),
             cert: fs.readFileSync(certFileName, "utf-8")

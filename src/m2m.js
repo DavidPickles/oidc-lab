@@ -1,6 +1,6 @@
 import axios from 'axios'
 import jwt from 'jsonwebtoken'
-import idpPropertiesBuilder from './abettors/idpPropertiesBuilder.js'
+import idpPropertiesBuilder from './abettors/idp-properties-builder.js'
 import Verifier from './abettors/verifier.js'
 
 async function run() {

@@ -52,7 +52,7 @@ In general it's bad practice to store .env files in source control because they 
 ### 2.Authorization Code Flow
 
 ```
-node ./lab.js "duende-demo-server"
+node lab "duende-demo-server"
 ```
 
 Then point your browser at http://localhost:9023. You should see something like this:
@@ -120,8 +120,8 @@ This will mean that OIDC-Lab can run on example1.internal. You'll need to change
 ## Reference for .env files
 
 Note the use of IDP_BASE_URL, AUHTORIZE_PATH, and TOKEN_PATH are deprecated. ISSUER should be used instead. ISSUER will trigger the use of the [OIDC Well Known Discovery Document](https://oauth.net/2/authorization-server-metadata/).   
-- Endpoints and other information such as private keys will be be obtained from the discovery document.
-- The private keys will be used to verify the tokens returned by the OP.
+- Endpoints and other information such as public keys will be be obtained from the discovery document.
+- The public keys will be used to verify the tokens returned by the OP.
 - Not every OP provides a discovery document. For those servers which don't, continue to use IDP_BASE_URL with TOKEN_PATH and AUTHORIZE_PATH. 
 - ISSUER and IDP_BASE_URL are exclusive. If you specify both you'll get an error. 
 - If you use IDP_BASE_URL:
@@ -130,92 +130,24 @@ Note the use of IDP_BASE_URL, AUHTORIZE_PATH, and TOKEN_PATH are deprecated. ISS
 
 Parameter | Opt/Req| Meaning
 --|--|--
-MODE | Required | oidc or m2m
+API_ENDPOINT-\<n> | Optional | API Endpoints that will be called with the access token as a bearer token.  Values of n can be 1-9.
+APP_TITLE | Optional | Title that will appear on the oidc mode home page. 
+AUTHORIZE_PATH | Required if IDP_BASE_URL and MODE is oidc| The path of authorization endpoint of the OP
+BASE_URL | Required | The URL under which OIDC-Lab pages appear.
+CALL_BACK_PATH | Optional | By default the redirect_uri (OIDC callback) is `BASE_URL/oauth-callback`, but this parameter can be used to override it.
+CERTS_FOLDER | Optional | Default is `certs`.
 CLIENT_ID | Required | A client id registered on the OP
 CLIENT_SECRET | Required if the registered client is confidential | The corresponding client secret
-ISSUER | Required if no IDP_BASE_URL | The domain of the OIDC discovery document 
-IDP_BASE_URL | Required if no ISSUER | Base URL of the OP
-AUTHORIZE_PATH | Required if IDP_BASE_URL and MODE is oidc| The path of authorization endpoint of the OP
-TOKEN_PATH | Required if IDP_BASE_URL | The path of the token endpoint of the OP
-SCOPE | Required | Scope parameter to the authorization request. 
-APP_TITLE | Optional | Title that will appear on the OIDC mode home page. 
-SPIEL | Optional | A description that will appear on the OIDC mode home page. 
-API_ENDPOINT-\<n> | Optional | API Endpoints that will be called with with the access token as a bearer token.  Values of n can be 1-9.
-BASE_URL | Required | The URL under which OIDC-Lab will run,
-CALL_BACK_PATH | Optional | By default the redirect_uri (OIDC callback) is `BASE_URL/oauth-callback`, but this parameter can be used to override it.
-COOKIE_SECRET | Required | Used for encrypting local session cookies. 
+COOKIE_SECRET | Required | Used for encrypting local session cookies. The value of this isn't important unless you're thinking of exposing OIDC-Lab pages on the Internet (which is not recommended). 
 HOME_PATH | Optional | By default the home URL of the app is BASE_URL, this parameter can override it
+IDP_BASE_URL | Required if no ISSUER | Base URL of the OP
+ISSUER | Required if no IDP_BASE_URL | The domain of the OIDC discovery document 
+MODE | Required | oidc or m2m
+SCOPE | Required | Scope parameter to the authorization request. 
+SPIEL | Optional | A description that will appear on the OIDC mode home page. 
+TOKEN_PATH | Required if IDP_BASE_URL | The path of the token endpoint of the OP
 
+## HTTPS and OIDC-Lab
 
-## HTTPS for the OIDC-Lab app 
-
-*You need this if you want to run OIDC-Lab in oidc mode under HTTPS*
-
-Some providers (eg Microsoft Entra ID) require HTTPS for the callback url, so OIDC-Lab has to talk to the browser over https, not plain http. This means three things. First, OIDC-Lab needs a private key to encrypt data it sends to the browser. Secondly, OIDC-Lab needs a certificate to send to the browser during the TLS handshake, the certificate contains a public key and signature from a certificate authority. And, thirdly, the browser needs access to the certificate authority which created the signature.
-
-To do this use https://github.com/FiloSottile/mkcert. Once you've installed mkcert you need to do this:
-
-```
-$ mkcert -install
-```
-You only have to one this once for your machine. It creates new local certificate authority (CA) and puts it in the mkcert application support folder. The CA is a private key and a certificate. The certificate is copied to the system's trust store, so browsers will use it.  The certificate is basically a signed public key. Because its a CA, the certificate is self-signed by the CA's own private key.
-
-To enable HTTPS for the domain of the BASE_URL in the .env file, you need to create a private key and a certificate  in the folder which holds the .env file. 
-
-Change directory to that folder. 
-
-```
-cd configs/<config dir>
-```
-Then:
-```
-$ mkcert <hostname>
-```
-This creates a private key `<hostname>-key.pem` and a certificate file `<hostname>.pem` in the config directory. The certificate is, basically, a public key and a domain name signed by  mkcert's CA's private key. So unlike the CA's certificate, it is not self-signed, it is signed by the CA. The fact it's signed by the CA means that a consumer of the certificate - such as a browser - who trusts the CA can infer that the server behind the domain name has been verified by the CA. 
-
-These files are needed by OIDC-Lab to serve HTTPS requests. Because they are in the config directory, OIDC-Lab picks them up automatically.
-
-On Windows, mkcert Doesn't work for windows/firefox. So you can't use Firefox as your browser.
-
-```
-PS> mkcert -install
-Created a new local CA 💥
-The local CA is now installed in the system trust store! ⚡️
-Note: Firefox support is not available on your platform. ℹ️
-```
-
-## HTTPS for an OP on localhost (Windows only)
-
-*You need this if you want to run a locally hosted OpenID Provider (for example IDS) under HTTPS*
-
- If IDS is running on windows locally on localhost, then you should use:
-
-`dotnet dev-certs https --trust`
-
-This creates a usable self-signed certificate for localhost and adds it to the local CA trust store. 
-
-Node.js isn't able to see the certificate which causes a problem.  When OIDC-Lab tries to make a request to https://localhost (which happens at the last step of the Authorization Code Flow, when OIDC-Lab tries to obtain tokens from the OP), you'll get an error something like this:
-
-```
-Error: self-signed certificate
-    at AxiosError.from (C:\Users\david.Pickles\bhcode\Research_Identity\OIDC-Lab\node_modules\axios\dist\node\axios.cjs:836:14)
-    ...
-```
-
-To fix this you need to export a copy of the certificate and tell Node.js about it. You do that as follows: 
-
-```
-cd configs/<config dir>
-```
-
-Create a localhost.pem file in the `<config dir>`: 
-
-```
-dotnet dev-certs https --export-path localhost.pem --no-password --format pem
-```
-Before you run node, you have to tell Node about the certificate via an environment variable. On Windows:
-```
-$Env:NODE_EXTRA_CA_CERTS = "configs/<config dir>/localhost.pem"
-```
-(I haven't tried using some other hostname for the OP on Windows. That could be an issue, because as I understand it dotnet dev-certs https only works for localhost.)
+See [CERTIFICATES](./certs/CERTIFICATES.md)
 
