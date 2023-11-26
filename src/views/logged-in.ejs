@@ -42,7 +42,7 @@ function prettyMillis(millis) {
     <a href="#refresh-token-section">Refresh Token</a>
     <a href="#refresh-token-req-section">Token Request with Refresh Token</a>
     <a href="#raw-access-token-section">Raw Access Token</a>
-    <a href="#api1-response-section">API Response</a>
+    <a href="#api1-response-section">API Responses</a>
 </nav>
 <main>
     <div id="decoded-access-token-section">
@@ -117,14 +117,14 @@ function prettyMillis(millis) {
         <div id="access-token" class="codey"><%= accessToken %></div>
     </div>
     <div id="api1-response-section">
-        <% for (let i=0; i<apiEndpoints.length; ++i) { %>
-            <h4>Endpoint <%= i+1 %></h4>
-            <div class="codey">Operation: GET <%= apiEndpoints[i] %></div>
-            <% if (endpointResps) { %>
-                <div class="codey"><%= JSON.stringify(endpointResps[i], null, 2) %> </div>
-            <% } else { %>
-                <div class="codey">NO RESPONSES</div>
+        <% if (Array.isArray(endpointResps) && endpointResps.length) { %>
+            <% for (const resp of endpointResps) { %>
+                <h4>Endpoint <%= resp.name %></h4>
+                <div class="codey">Operation: GET <%= resp.url %></div>
+                <div class="codey"><%= JSON.stringify({status: resp.status, data: resp.data}, null, 2) %> </div>
             <% } %>
+        <% } else { %>
+            <div class="codey">No API endpoint responses</div>
         <% } %>
     </div>
 </main>

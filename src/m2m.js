@@ -1,7 +1,8 @@
 import axios from 'axios'
-import jwt from 'jsonwebtoken'
 import idpPropertiesBuilder from './abettors/idp-properties-builder.js'
 import Verifier from './abettors/verifier.js'
+import apis from './abettors/apis.js'
+
 
 async function run() {
     const idpProps = await idpPropertiesBuilder.buildStaticProperties({
@@ -19,6 +20,7 @@ async function run() {
     })  
     console.log("jwksUri", idpProps.jwksUri)
     const verifier = new Verifier(idpProps.jwksUri)
+    const namedApiEndpoints =  apis.getNamedApiEndpoints()
     const tokenRequestOptions = {
         method: 'POST',
         url: idpProps.tokenEndpoint,
@@ -49,6 +51,11 @@ async function run() {
         console.log(`Access token verified by ${idpProps.jwksUri}`)
     } else {
         console.log(`Access token not verified`)
+    }
+    if (namedApiEndpoints.length) {
+        console.log("API Calls")
+        const endpointResps = await apis.getResponses(namedApiEndpoints, token)
+        endpointResps.forEach( r => console.log(r) )
     }
     console.log()
 }

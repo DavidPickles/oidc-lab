@@ -20,7 +20,7 @@ const app = express()
 const appProperties = {
     baseUrl: process.env.BASE_URL,
     callbackPath: process.env.CALLBACK_PATH ?? '/oauth-callback',
-    apiEndpoints: apis.getApiEndpoints(),
+    namedApiEndpoints: apis.getNamedApiEndpoints(),
     homePath: process.env.HOME_PATH ?? '/',
     certsFolder: process.env.CERTS_FOLDER ?? './certs',
     title: process.env.APP_TITLE ?? 'No Name',
@@ -166,12 +166,8 @@ app.get('/call-api-endpoints', async(req, res) => {
     if (!accessToken) {
         return res.status(401).send('No access token')
     }
-    const endpointResps = []
-    req.session.endpointResps = endpointResps
-    for (const endpoint of appProperties.apiEndpoints) {
-        endpointResps.push( await apis.getFrom(endpoint, accessToken)  )
-    }
-    console.log(endpointResps)
+    req.session.endpointResps = await apis.getResponses(appProperties.namedApiEndpoints, accessToken)
+    req.session.endpointResps.forEach( r => console.log(r) )
     res.redirect(appProperties.homePath)
 })
 

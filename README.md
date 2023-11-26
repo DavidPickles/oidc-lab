@@ -51,6 +51,8 @@ In general it's bad practice to store .env files in source control because they 
 
 ### 2.Authorization Code Flow
 
+To demonstrate user-based authentication:
+
 ```
 node lab "duende-demo-server"
 ```
@@ -71,6 +73,8 @@ After you login, your page should look something like this:
 
 ### 4. Client Credentials Flow
 
+To demonstrate machine-to-machine authentication:
+
 ```
 node lab "m2m-duende-demo-server"
 ```
@@ -79,6 +83,15 @@ This gets a token and shows it on the console. There is no user interaction. The
 
 ![lab-screenshot](./img/lab-screenshot-4.png)
 
+
+## Using the access token as a bearer token. 
+
+An .env file can contain a list of named API endpoints which will be called with the access token as a bearer token. The configuration property names start 'API_ENDPOINT' and end with a given name for the endpoint. For example: 
+
+```
+API_ENDPOINT_INFO="https://demo.duendesoftware.com/connect/userinfo"
+API_ENDPOINT_MY_ENDPOINT="http://example1.internal:3007/something"
+```
 
 ## Cookies and Logout
 
@@ -130,7 +143,7 @@ Note the use of IDP_BASE_URL, AUHTORIZE_PATH, and TOKEN_PATH are deprecated. ISS
 
 Parameter | Opt/Req| Meaning
 --|--|--
-API_ENDPOINT-\<n> | Optional | API Endpoints that will be called with the access token as a bearer token.  Values of n can be 1-9.
+API_ENDPOINT-\<name> | Optional | API Endpoints that will be called with the access token as a bearer token.  Values of <name> can be any string.
 APP_TITLE | Optional | Title that will appear on the oidc mode home page
 AUTHORIZE_PATH | Required if IDP_BASE_URL and MODE is oidc| The path of authorization endpoint of the OP
 BASE_URL | Required | The URL under which OIDC-Lab pages appear

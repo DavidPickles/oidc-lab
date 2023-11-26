@@ -1,26 +1,37 @@
 import  axios from 'axios'
 
-const getApiEndpoints = () => {
+const getNamedApiEndpoints = () => {
     const endpoints = []
-    for (const k in process.env) {
-        if (k.startsWith('API_ENDPOINT')) {
-            endpoints.push(process.env[k])
+    for (const envVar in process.env) {
+        const prefix = 'API_ENDPOINT_'
+        if (envVar.startsWith(prefix)) {
+            const name = envVar.substring( prefix.length )
+            endpoints.push({name, url: process.env[envVar]})
         }
     }
     return endpoints
 }
 
-const getFrom = async (endpoint, accessToken) => {
-    console.log('Calling ', endpoint)
+const getResponse = async (namedEndpoint, accessToken) => {
+    // console.log('Calling ', endpoint)
     const options = {
         method: 'GET',
-        url: endpoint,
+        url: namedEndpoint.url,
         headers: accessToken ? {'Authorization': 'Bearer ' + accessToken} : undefined,
         validateStatus: () => true // always resolve the promise
     }
     const responseObject = await axios(options)
-    console.log(`Got ${endpoint}`)
-    return {status: responseObject.status, data: responseObject.data}
+    // console.log(`Got ${endpoint}`)
+    return {...namedEndpoint, status: responseObject.status, data: responseObject.data}
 }
 
-export default { getApiEndpoints, getFrom }
+const getResponses = async (namedApiEndpoints, accessToken)  => {
+    const endpointResps = []
+    for ( const namedEndpoint of namedApiEndpoints ) {
+        endpointResps.push(await getResponse(namedEndpoint, accessToken))
+    }    
+    return endpointResps
+}
+
+
+export default { getNamedApiEndpoints, getResponse, getResponses }
