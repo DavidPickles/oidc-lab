@@ -23,7 +23,7 @@ npm install
 
 ## Configure and test
 
-OIDC-Lab is a configurable OAuth2 client. Configuration files are .env files in sub-folders of the configs folder. You  manage your own configurations in configs, but two sample .env templates are provided to show how things work.  Both samples connect to [Duende's Public Demo Server](https://demo.duendesoftware.com/); one sample demonstrates OIDC Authorization Code Flow, the other demonstrates OAuth2 Client Credentials Flow. 
+OIDC-Lab is a configurable OAuth2 client. Configuration files are .env files in sub-folders of the `configs` folder. You  manage your own configurations in `configs`, but two sample .env templates are provided to show how things work.  Both samples connect to [Duende's Public Demo Server](https://demo.duendesoftware.com/); one sample demonstrates OIDC Authorization Code Flow, the other demonstrates OAuth2 Client Credentials Flow. 
 
 ### 1. Configure
 
@@ -31,7 +31,7 @@ OIDC-Lab is a configurable OAuth2 client. Configuration files are .env files in 
 mkdir configs
 ```
 
-Then copy the folders in config-samples/ to configs/. 
+Then copy the folders in `config-samples` to `configs`. 
 
 ```
 cp -r config-samples/* configs
@@ -52,7 +52,7 @@ In general it's bad practice to store .env files in source control because they 
 ### 2.Authorization Code Flow
 
 ```
-node ./app.js "duende-demo-server"
+node ./lab.js "duende-demo-server"
 ```
 
 Then point your browser at http://localhost:9023. You should see something like this:
@@ -72,7 +72,7 @@ After you login, your page should look something like this:
 ### 4. Client Credentials Flow
 
 ```
-node ./app.js "m2m-duende-demo-server"
+node ./lab.js "m2m-duende-demo-server"
 ```
 
 This gets a token and shows it on the console. There is no user interaction. The output should look like this:
@@ -89,7 +89,7 @@ When you're exploring OPs it can be hard to keep track of which users are logged
 
 ## Using your own configuration repo
 
-You can use your own repo in the configs folder. However because .env files typically contain secrets they, must not be stored in the code repo. They are excluded by a .gitignore rule.
+You can use your own repo in the `configs` folder. However because .env files typically contain secrets they, must not be stored in the code repo. They are excluded by a .gitignore rule.
 
 It is good practice to store the configurations as env.template files, with client and cookie secrets removed. 
 
@@ -147,18 +147,18 @@ COOKIE_SECRET | Required | Used for encrypting local session cookies.
 HOME_PATH | Optional | By default the home URL of the app is BASE_URL, this parameter can override it
 
 
-## HTTPS for OIDC-Lab app 
+## HTTPS for the OIDC-Lab app 
 
-*You need this if you want to run the OIDC-Lab application under HTTPS*
+*You need this if you want to run OIDC-Lab in oidc mode under HTTPS*
 
-Some providers (eg Azure) require HTTPS for callback url. For those you need a private key and certificate file in the config folder along with the .env file. 
+Some providers (eg Microsoft Entra ID) require HTTPS for the callback url, so OIDC-Lab has to talk to the browser over https, not plain http. This means three things. First, OIDC-Lab needs a private key to encrypt data it sends to the browser. Secondly, OIDC-Lab needs a certificate to send to the browser during the TLS handshake, the certificate contains a public key and signature from a certificate authority. And, thirdly, the browser needs access to the certificate authority which created the signature.
 
 To do this use https://github.com/FiloSottile/mkcert. Once you've installed mkcert you need to do this:
 
 ```
 $ mkcert -install
 ```
-You only have to one this once for your machine. It creates new local certificate authority (CA) and puts it in the mkcert application support folder. The CA is a private key and a certificate. The certificate is copied to the system's trust store.  The certificate is basically a signed public key. Because its a CA, the certificate is self-signed by the CA's own private key.
+You only have to one this once for your machine. It creates new local certificate authority (CA) and puts it in the mkcert application support folder. The CA is a private key and a certificate. The certificate is copied to the system's trust store, so browsers will use it.  The certificate is basically a signed public key. Because its a CA, the certificate is self-signed by the CA's own private key.
 
 To enable HTTPS for the domain of the BASE_URL in the .env file, you need to create a private key and a certificate  in the folder which holds the .env file. 
 
