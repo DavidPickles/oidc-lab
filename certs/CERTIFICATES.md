@@ -20,7 +20,7 @@ For the second scenario where the OP uses a local CA,  OIDC-Lab is the TLS clien
 
 Some providers (eg Microsoft Entra ID) require HTTPS for the callback url, therefore OIDC-Lab has enable a browser to present its pages under HTTPS. Its BASE_URL must start `https://`. This means three things. First, OIDC-Lab needs a private key to encrypt data it sends to the browser. Secondly, OIDC-Lab needs a certificate to send to the browser during the TLS handshake, the certificate contains a public key and signature from a certificate authority (CA). And, thirdly, the browser needs access to the CA which created the signature.
 
-To do this use https://github.com/FiloSottile/mkcert. Once you've installed mkcert:
+To do this use https://github.com/FiloSottile/mkcert. After you've installed mkcert you need to run:
 
 ```
 $ mkcert -install

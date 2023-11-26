@@ -72,7 +72,7 @@ After you login, your page should look something like this:
 ### 4. Client Credentials Flow
 
 ```
-node ./lab.js "m2m-duende-demo-server"
+node lab "m2m-duende-demo-server"
 ```
 
 This gets a token and shows it on the console. There is no user interaction. The output should look like this:
@@ -131,11 +131,11 @@ Note the use of IDP_BASE_URL, AUHTORIZE_PATH, and TOKEN_PATH are deprecated. ISS
 Parameter | Opt/Req| Meaning
 --|--|--
 API_ENDPOINT-\<n> | Optional | API Endpoints that will be called with the access token as a bearer token.  Values of n can be 1-9.
-APP_TITLE | Optional | Title that will appear on the oidc mode home page. 
+APP_TITLE | Optional | Title that will appear on the oidc mode home page
 AUTHORIZE_PATH | Required if IDP_BASE_URL and MODE is oidc| The path of authorization endpoint of the OP
-BASE_URL | Required | The URL under which OIDC-Lab pages appear.
-CALL_BACK_PATH | Optional | By default the redirect_uri (OIDC callback) is `BASE_URL/oauth-callback`, but this parameter can be used to override it.
-CERTS_FOLDER | Optional | Default is `certs`.
+BASE_URL | Required | The URL under which OIDC-Lab pages appear
+CALL_BACK_PATH | Optional | By default the redirect_uri (OIDC callback) is `BASE_URL/oauth-callback`, but this parameter can be used to override it
+CERTS_FOLDER | Optional | Default is `certs`
 CLIENT_ID | Required | A client id registered on the OP
 CLIENT_SECRET | Required if the registered client is confidential | The corresponding client secret
 COOKIE_SECRET | Required | Used for encrypting local session cookies. The value of this isn't important unless you're thinking of exposing OIDC-Lab pages on the Internet (which is not recommended). 
@@ -143,8 +143,8 @@ HOME_PATH | Optional | By default the home URL of the app is BASE_URL, this para
 IDP_BASE_URL | Required if no ISSUER | Base URL of the OP
 ISSUER | Required if no IDP_BASE_URL | The domain of the OIDC discovery document 
 MODE | Required | oidc or m2m
-SCOPE | Required | Scope parameter to the authorization request. 
-SPIEL | Optional | A description that will appear on the OIDC mode home page. 
+SCOPE | Required | Scope parameter to the authorization request
+SPIEL | Optional | A description that will appear on the OIDC mode home page
 TOKEN_PATH | Required if IDP_BASE_URL | The path of the token endpoint of the OP
 
 ## HTTPS and OIDC-Lab
