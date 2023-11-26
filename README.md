@@ -6,6 +6,19 @@ OIDC-Lab is a configurable OAuth2 client which can be used to demonstrate and te
 
 **The code in this repo is for demonstration and testing purposes only it is not for production use.**
 
+* [System Requirements](#system-requirements)
+* [Install](#install)
+* [Configure and test](#configure-and-test)
+   + [1. Configure](#1-configure)
+   + [2.Authorization Code Flow](#2authorization-code-flow)
+   + [3. Client Credentials Flow](#3-client-credentials-flow)
+* [Using the access token as a bearer token. ](#using-the-access-token-as-a-bearer-token)
+* [Cookies and Logout](#cookies-and-logout)
+* [Using your own configuration repo](#using-your-own-configuration-repo)
+* [Hosts other than localhost](#hosts-other-than-localhost)
+* [Reference for .env files](#reference-for-env-files)
+* [HTTPS and OIDC-Lab](#https-and-oidc-lab)
+
 ## System Requirements
 
 - [Git](https://git-scm.com/downloads)
@@ -71,7 +84,7 @@ After you login, your page should look something like this:
 
 ![lab-screenshot](./img/lab-screenshot-3.png)
 
-### 4. Client Credentials Flow
+### 3. Client Credentials Flow
 
 To demonstrate machine-to-machine authentication:
 
@@ -84,7 +97,7 @@ This gets a token and shows it on the console. There is no user interaction. The
 ![lab-screenshot](./img/lab-screenshot-4.png)
 
 
-## Using the access token as a bearer token. 
+## Using the access token as a bearer token
 
 An .env file can contain a list of named API endpoints which will be called with the access token as a bearer token. The configuration property names start 'API_ENDPOINT' and end with a given name for the endpoint. For example: 
 
