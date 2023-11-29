@@ -1,10 +1,8 @@
 import axios from 'axios'
-import outgoingRequestOpts from './abettors/outgoing-request-properties.js'
-
 
 async function buildStaticProperties( {  mode, issuer, clientId, clientSecret, redirectUri, 
                                     scope, otherParams, logoutPath, 
-                                    idpBaseUrl, tokenPath, authorizationPath } ) {
+                                    idpBaseUrl, tokenPath, authorizationPath, outgoingRequestOpts } ) {
 
     if (mode !== 'm2m' && mode !== 'oidc') {
         throw new Error("MODE must be 'm2m' or 'oidc'")
@@ -28,7 +26,7 @@ async function buildStaticProperties( {  mode, issuer, clientId, clientSecret, r
     let oidcDiscoveryEndpoint = null
     let idpConfig = null
     if ( issuer ) {
-        idpConfig = await getDiscoveryData(issuer)
+        idpConfig = await getDiscoveryData(issuer, outgoingRequestOpts)
     } else { // no issuer
         console.log("Warning NO ISSUER. Tokens will not be verified. OIDC discovery .well-known endpoint not used.")
         idpConfig = {
@@ -45,9 +43,9 @@ async function buildStaticProperties( {  mode, issuer, clientId, clientSecret, r
     }
 }
 
-async function getDiscoveryData(issuer) {
+async function getDiscoveryData(issuer, outgoingRequestOpts) {
     const oidcDiscoveryEndpoint = `${issuer}/.well-known/openid-configuration`
-    const oidcConfigResp = await axios.get(oidcDiscoveryEndpoint, ...outgoingRequestOpts)
+    const oidcConfigResp = await axios.get(oidcDiscoveryEndpoint, outgoingRequestOpts)
     validateDiscoveryData(oidcConfigResp.data)
     return {
         authorizationEndpoint: oidcConfigResp.data.authorization_endpoint,

@@ -1,5 +1,5 @@
 import  axios from 'axios'
-import outgoingRequestOpts from './abettors/outgoing-request-properties.js'
+import outgoingRequestOpts from './outgoing-request-properties.js'
 
 const getNamedApiEndpoints = () => {
     const endpoints = []
@@ -13,7 +13,7 @@ const getNamedApiEndpoints = () => {
     return endpoints
 }
 
-const getResponse = async (namedEndpoint, accessToken, axiosOpts) => {
+const getResponse = async (namedEndpoint, accessToken, outgoingRequestOpts) => {
     // console.log('Calling ', endpoint)
     const options = {
         ...outgoingRequestOpts,

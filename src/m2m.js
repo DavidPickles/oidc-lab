@@ -2,7 +2,7 @@ import axios from 'axios'
 import idpPropertiesBuilder from './abettors/idp-properties-builder.js'
 import Verifier from './abettors/verifier.js'
 import apis from './abettors/apis.js'
-import outgoingRequestOpts from './abettors/outgoing-request-properties.js'
+import getOutgoingRequestOpts from './abettors/outgoing-request-properties.js'
 
 
 async function run() {
@@ -22,6 +22,7 @@ async function run() {
     console.log("jwksUri", idpProps.jwksUri)
     const verifier = new Verifier(idpProps.jwksUri)
     const namedApiEndpoints =  apis.getNamedApiEndpoints()
+    const outgoingRequestOpts = getOutgoingRequestOpts({ insureHttps: process.env.INSECURE_OUTGOING_HTTPS })
     const tokenRequestOptions = {
         ...outgoingRequestOpts,
         method: 'POST',
@@ -56,7 +57,7 @@ async function run() {
     }
     if (namedApiEndpoints.length) {
         console.log("API Calls")
-        const endpointResps = await apis.getResponses(namedApiEndpoints, token)
+        const endpointResps = await apis.getResponses(namedApiEndpoints, token, outgoingRequestOpts)
         endpointResps.forEach( r => console.log(r) )
     }
     console.log()

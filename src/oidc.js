@@ -12,7 +12,7 @@ import apis from './abettors/apis.js'
 import urlBasedProps from './abettors/url-based-properties.js'
 import idpPropertiesBuilder from './abettors/idp-properties-builder.js'
 import Verifier from './abettors/verifier.js'
-import outgoingRequestOpts from './abettors/outgoing-request-properties.js'
+import getOutgoingRequestOpts from './abettors/outgoing-request-properties.js'
 
 const app = express()
 
@@ -25,7 +25,8 @@ const appProperties = {
     homePath: process.env.HOME_PATH ?? '/',
     certsFolder: process.env.CERTS_FOLDER ?? './certs',
     title: process.env.APP_TITLE ?? 'No Name',
-    spiel: process.env.SPIEL ??  ''
+    spiel: process.env.SPIEL ??  '',
+    outgoingRequestOpts: getOutgoingRequestOpts({insureHttps: process.env.INSECURE_OUTGOING_HTTPS})
 }
 
 async function run() {
@@ -43,6 +44,7 @@ async function run() {
         // if you have and idpBaseUrl you must have a token path and authorize path too
         tokenPath: process.env.TOKEN_PATH,
         authorizationPath: process.env.AUTHORIZE_PATH,
+        outgoingRequestOpts: appProperties.outgoingRequestOpts,
     })  
     app.locals.verifier = new Verifier(app.locals.oidcProperties.jwksUri)
     const baseUrl = new URL(appProperties.baseUrl)
@@ -117,7 +119,7 @@ app.get(appProperties.callbackPath, async (req, res) => {
     console.log('token endpoint',oidcProps.tokenEndpoint)
     const code = req.query.code
     const tokenRequestOptions = {
-        ...outgoingRequestOpts,
+        ...appProperties.outgoingRequestOpts,
         method: 'POST',
         url: oidcProps.tokenEndpoint,
         data:  {
@@ -145,7 +147,7 @@ app.get('/refresh', async(req, res) => {
     const oidcProps = app.locals.oidcProperties
     console.log('Refresh token endpoint',oidcProps.tokenEndpoint)
     const refreshRequestOptions = {
-        ...outgoingRequestOpts,
+        ...appProperties.outgoingRequestOpts,
         method: 'POST',
         url: oidcProps.tokenEndpoint,
         data:  {
@@ -169,7 +171,7 @@ app.get('/call-api-endpoints', async(req, res) => {
     if (!accessToken) {
         return res.status(401).send('No access token')
     }
-    req.session.endpointResps = await apis.getResponses(appProperties.namedApiEndpoints, accessToken)
+    req.session.endpointResps = await apis.getResponses(appProperties.namedApiEndpoints, accessToken, appProperties.outgoingRequestOpts)
     req.session.endpointResps.forEach( r => console.log(r) )
     res.redirect(appProperties.homePath)
 })
