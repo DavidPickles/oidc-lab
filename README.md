@@ -165,6 +165,7 @@ CERTS_FOLDER | Optional | Default is `certs`
 CLIENT_ID | Required | A client id registered on the OP
 CLIENT_SECRET | Required if the registered client is confidential | The corresponding client secret
 COOKIE_SECRET | Required | Used for encrypting local session cookies. The value of this isn't important unless you're thinking of exposing OIDC-Lab pages on the Internet (which is not recommended). 
+INSECURE_OUTGOING_HTTPS | Optional | Default is false.  If true, potential security issues with requests to https: endpoints on the OP and on any API requests will be ignored, the requests are thereby made insecure. (The axios agent options this sets are rejectUnauthorized: false, and secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT)
 HOME_PATH | Optional | By default the home URL of the app is BASE_URL, this parameter can override it
 IDP_BASE_URL | Required if no ISSUER | Base URL of the OP
 ISSUER | Required if no IDP_BASE_URL | The domain of the OIDC discovery document 

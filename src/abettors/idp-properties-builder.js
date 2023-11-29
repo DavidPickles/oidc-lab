@@ -1,4 +1,6 @@
 import axios from 'axios'
+import outgoingRequestOpts from './abettors/outgoing-request-properties.js'
+
 
 async function buildStaticProperties( {  mode, issuer, clientId, clientSecret, redirectUri, 
                                     scope, otherParams, logoutPath, 
@@ -45,7 +47,7 @@ async function buildStaticProperties( {  mode, issuer, clientId, clientSecret, r
 
 async function getDiscoveryData(issuer) {
     const oidcDiscoveryEndpoint = `${issuer}/.well-known/openid-configuration`
-    const oidcConfigResp = await axios.get(oidcDiscoveryEndpoint)
+    const oidcConfigResp = await axios.get(oidcDiscoveryEndpoint, ...outgoingRequestOpts)
     validateDiscoveryData(oidcConfigResp.data)
     return {
         authorizationEndpoint: oidcConfigResp.data.authorization_endpoint,

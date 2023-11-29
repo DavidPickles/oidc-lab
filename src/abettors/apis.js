@@ -1,4 +1,5 @@
 import  axios from 'axios'
+import outgoingRequestOpts from './abettors/outgoing-request-properties.js'
 
 const getNamedApiEndpoints = () => {
     const endpoints = []
@@ -12,13 +13,14 @@ const getNamedApiEndpoints = () => {
     return endpoints
 }
 
-const getResponse = async (namedEndpoint, accessToken) => {
+const getResponse = async (namedEndpoint, accessToken, axiosOpts) => {
     // console.log('Calling ', endpoint)
     const options = {
+        ...outgoingRequestOpts,
         method: 'GET',
         url: namedEndpoint.url,
         headers: accessToken ? {'Authorization': 'Bearer ' + accessToken} : undefined,
-        validateStatus: () => true // always resolve the promise
+        validateStatus: () => true, // always resolve the promise
     }
     const responseObject = await axios(options)
     // console.log(`Got ${endpoint}`)

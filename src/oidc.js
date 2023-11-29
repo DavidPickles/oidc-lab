@@ -12,6 +12,7 @@ import apis from './abettors/apis.js'
 import urlBasedProps from './abettors/url-based-properties.js'
 import idpPropertiesBuilder from './abettors/idp-properties-builder.js'
 import Verifier from './abettors/verifier.js'
+import outgoingRequestOpts from './abettors/outgoing-request-properties.js'
 
 const app = express()
 
@@ -116,6 +117,7 @@ app.get(appProperties.callbackPath, async (req, res) => {
     console.log('token endpoint',oidcProps.tokenEndpoint)
     const code = req.query.code
     const tokenRequestOptions = {
+        ...outgoingRequestOpts,
         method: 'POST',
         url: oidcProps.tokenEndpoint,
         data:  {
@@ -143,6 +145,7 @@ app.get('/refresh', async(req, res) => {
     const oidcProps = app.locals.oidcProperties
     console.log('Refresh token endpoint',oidcProps.tokenEndpoint)
     const refreshRequestOptions = {
+        ...outgoingRequestOpts,
         method: 'POST',
         url: oidcProps.tokenEndpoint,
         data:  {
