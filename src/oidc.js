@@ -213,7 +213,7 @@ async function verifyAndStoreTokens(tokens, store) {
     store.accessTokenWasIssuedAtMillis = (new Date()).getTime()
     store.decodedIdToken = await unpack('id')
     store.refreshToken = tokens.refresh_token ?? store.refreshToken ?? null
-    console.log('Got tokens, now logged in as',store.decodedIdToken.payload.sub)
+    console.log('Got tokens, now logged in as',store.decodedIdToken?.payload?.sub || "<no ID Token sub claim>")
     return '/call-api-endpoints'
 } 
 
