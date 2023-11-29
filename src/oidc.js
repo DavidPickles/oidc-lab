@@ -26,7 +26,7 @@ const appProperties = {
     certsFolder: process.env.CERTS_FOLDER ?? './certs',
     title: process.env.APP_TITLE ?? 'No Name',
     spiel: process.env.SPIEL ??  '',
-    outgoingRequestOpts: getOutgoingRequestOpts({insureHttps: process.env.INSECURE_OUTGOING_HTTPS})
+    outgoingRequestOpts: getOutgoingRequestOpts({ httpsSecurity: process.env.OUTGOING_HTTP_SECURITY })
 }
 
 async function run() {

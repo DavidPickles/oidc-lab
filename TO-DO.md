@@ -8,4 +8,5 @@
 -  Needed in some cirumsstances as axios option, to avoid "Error: write EPROTO CC1B0000:error:0A000152:SSL routines:final_renegotiate:unsafe legacy renegotiation disabled:c:\ws\deps\openssl\openssl\ssl\statem\extensions.c:922:". : `httpsAgent: new https.Agent({ secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT, })`,
 - (+ another opt that I believe does the same as reject unauthorized ...)
 - maybe add a 'nuke tls security' option which does the lot?
-- take reference to process.env out of apis (instead pass in an array of name/value pairs basically all the process.env properties)
+- take reference to process.env out of apis (instead pass in an array of name/value pairs basically all the process.env properties?)
+- Proper logging (with configurable log levels in .env)

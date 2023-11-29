@@ -22,7 +22,7 @@ async function run() {
     console.log("jwksUri", idpProps.jwksUri)
     const verifier = new Verifier(idpProps.jwksUri)
     const namedApiEndpoints =  apis.getNamedApiEndpoints()
-    const outgoingRequestOpts = getOutgoingRequestOpts({ insureHttps: process.env.INSECURE_OUTGOING_HTTPS })
+    const outgoingRequestOpts = getOutgoingRequestOpts({ httpsSecurity: process.env.OUTGOING_HTTP_SECURITY })
     const tokenRequestOptions = {
         ...outgoingRequestOpts,
         method: 'POST',

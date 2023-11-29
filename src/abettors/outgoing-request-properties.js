@@ -2,14 +2,14 @@ import crypto from 'crypto'
 import https from 'https'
 
 
-const getOutgoingRequestOpts = ({insecureHttps}) => {
+const getOutgoingRequestOpts = ({httpsSecurity}) => {
     const opts = {
         httpsAgent: new https.Agent({
             rejectUnauthorized: false,
             secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT,
       })
     }
-    if (insecureHttps) {
+    if (httpsSecurity && httpsSecurity.toLowerCase()==='none') {
         console.log("Warning: Insecure HTTPS")
         return opts
     } else {
