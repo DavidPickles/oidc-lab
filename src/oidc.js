@@ -31,7 +31,7 @@ const appProperties = {
 
 async function run() {
     app.locals.oidcProperties = await idpPropertiesBuilder.buildStaticProperties({
-        mode: process.env.MODE,
+        mode: 'oidc',
         clientId: process.env.CLIENT_ID,
         clientSecret: process.env.CLIENT_SECRET,
         redirectUri: appProperties.callbackPath ? appProperties.baseUrl + appProperties.callbackPath : null,
@@ -213,7 +213,7 @@ async function verifyAndStoreTokens(tokens, store) {
     store.accessTokenWasIssuedAtMillis = (new Date()).getTime()
     store.decodedIdToken = await unpack('id')
     store.refreshToken = tokens.refresh_token ?? store.refreshToken ?? null
-    console.log('Got tokens, now logged in as',store.decodedIdToken?.payload?.sub || "<no ID Token sub claim>")
+    console.log('Got tokens, now logged in as',store.decodedIdToken.payload.sub)
     return '/call-api-endpoints'
 } 
 

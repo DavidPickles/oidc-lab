@@ -5,6 +5,21 @@ import dotenv from 'dotenv'
 
 const usage = () => console.log("Usage: node ./app.js <config dir>")
 
+const getMode = () => {
+    if (process.env.MODE) {
+        if (process.env.MODE !== 'm2m' && mode !== 'oidc') {
+            throw new Error("MODE must be 'm2m' or 'oidc'")        
+        }
+        return process.env.MODE
+    }
+    if (process.env.SCOPE && process.env.SCOPE.split(' ').includes('openid')) {
+        return 'oidc'
+    } else {
+        return 'm2m'
+    } 
+} 
+
+
 if (process.argv.length !== 3) {
    usage()
    process.exit(0)
@@ -20,11 +35,7 @@ const run = async ({configDirName}) => {
         return
     }
     dotenv.config({ path: `${configPath}/.env`})   
-    const mode = process.env.MODE
-    if (mode !== 'm2m' && mode !== 'oidc') {
-        console.error("MODE in .env file must be 'm2m' or 'oidc'")
-        return
-    }    
+    const mode = getMode()
     await import(`./src/${mode}.js`)
 }
 run({ configDirName: process.argv[2] })

@@ -8,15 +8,15 @@ OIDC-Lab is a configurable OAuth2 client which can be used to demonstrate and te
 
 * [System Requirements](#system-requirements)
 * [Install](#install)
-* [Configure and test](#configure-and-test)
+* [Try it out](#try-it-out)
    + [1. Configure](#1-configure)
    + [2.Authorization Code Flow](#2authorization-code-flow)
    + [3. Client Credentials Flow](#3-client-credentials-flow)
+* [Reference](#reference)
 * [Using the access token as a bearer token. ](#using-the-access-token-as-a-bearer-token)
 * [Cookies and Logout](#cookies-and-logout)
 * [Using your own configuration repo](#using-your-own-configuration-repo)
 * [Hosts other than localhost](#hosts-other-than-localhost)
-* [Reference for .env files](#reference-for-env-files)
 * [HTTPS and OIDC-Lab](#https-and-oidc-lab)
 
 ## System Requirements
@@ -34,7 +34,7 @@ cd oidc-lab
 npm install
 ```
 
-## Configure and test
+## Try it out
 
 OIDC-Lab is a configurable OAuth2 client. Configuration files are .env files in sub-folders of the `configs` folder. You  manage your own configurations in `configs`, but two sample .env templates are provided to show how things work.  Both samples connect to [Duende's Public Demo Server](https://demo.duendesoftware.com/); one sample demonstrates OIDC Authorization Code Flow, the other demonstrates OAuth2 Client Credentials Flow. 
 
@@ -96,6 +96,41 @@ This gets a token and shows it on the console. There is no user interaction. The
 
 ![lab-screenshot](./img/lab-screenshot-4.png)
 
+## Reference
+
+OIDC-Lab is a configurable OIDC and OAuth2 client. Configuration is via .env files in sub-folders of the `configs` folder; they contain environment variables.
+ 
+ OIDC-Lab can run in two modes `oidc`  and `m2m`: `oidc` mode exercises OIDC authorization code flow, `m2m` OAuth2 client credentials flow. For authorization code flow, OIDC-Lab acts as a web server. For client credentials flow it is a purely command line application. Which of these modes OIDC-Lab runs in is determined by the SCOPE variable,  if it contains 'openid', the mode is `oidc` if not, it's `m2m`. There is a MODE variable which can be used to override this behaviour, but this is likely to return an error from the authorization server. 
+
+You normally specify the authorization server with the ISSUER variable: this will make OIDC-Lab use the server's [OIDC Well Known Discovery Document](https://oauth.net/2/authorization-server-metadata/).  If this document isn't available, or for whatever reason you don't want to use it, you can use the variables 
+IDP_BASE_URL, AUHTORIZE_PATH, and TOKEN_PATH instead. ISSUER and IDP_BASE_URL are exclusive. If you specify both you'll get an error. With ISSUER:
+- Endpoints and other information such as public keys will be be obtained from the discovery document.
+- The public keys will be used to verify the tokens returned by the authorization server.
+
+If you use IDP_BASE_URL:
+- You must specify TOKEN_PATH (and AUTHORIZE_PATH if mode is oidc)
+- Token verification and potentially other features which rely on the discovery document won't be available.
+
+Parameter | Opt/Req| Meaning
+--|--|--
+API_ENDPOINT-\<name> | Optional | API Endpoints that will be called with the access token as a bearer token.  Values of \<name> can be any string.
+APP_TITLE | Optional | Title that will appear on the `oidc` mode home page
+AUTHORIZE_PATH | Required if IDP_BASE_URL and mode is `oidc`| The path of authorization endpoint of the authorization server.
+BASE_URL | Required for `oidc` mode | The URL under which OIDC-Lab pages appear.
+CALL_BACK_PATH | Optional | By default the redirect_uri (OIDC callback) is `BASE_URL/oauth-callback`, but this parameter can be used to override it
+CERTS_FOLDER | Optional | Default is `certs`
+CLIENT_ID | Required | A client id registered on the authorization server.
+CLIENT_SECRET | Required if the registered client is confidential | The corresponding client secret
+COOKIE_SECRET | Required | Used for encrypting local session cookies. The value of this isn't important unless you're thinking of exposing OIDC-Lab pages on the Internet (which is not recommended). 
+OUTGOING_HTTPS_SECURITY | Optional | If "none", potential security issues with outgoing requests to https endpoints will be ignored. That includes requests to the authorization server, and to any API endpoints. The requests are thereby made insecure. (The axios agent options this sets are rejectUnauthorized: false, and secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT). Sometimes the network you're on makes this unavoidable.
+HOME_PATH | Optional | By default the home URL of the app is BASE_URL, this parameter can override it
+IDP_BASE_URL | Required if no ISSUER | Base URL of the authorization server.
+ISSUER | Required if no IDP_BASE_URL | The domain of the OIDC discovery document 
+MODE | Optional | oidc or m2m. This is rarely needed: `oidc` mode is selected if SCOPE contains 'openid', `m2m` mode is selected otherwise.  
+SCOPE | Required | Scope parameter to the authorization request. It is a space separated list of scopes. If it contains 'openid', `oidc` mode is selected, if not `m2m` mode is used.
+SPIEL | Optional | A description that will appear on the `oidc` mode home page
+TOKEN_PATH | Required if IDP_BASE_URL | The path of the token endpoint of the authorization server
+
 
 ## Using the access token as a bearer token
 
@@ -108,10 +143,10 @@ API_ENDPOINT_MY_ENDPOINT="http://example1.internal:3007/something"
 
 ## Cookies and Logout
 
-Cookies are used by OPs to represent a user's logged-in state. 
-The "Local Logout"  button is limited, it does not end a session with the OP. So even though it logs you out of OIDC-Lab it doesn't log you out of the OP.
+Cookies are used by to represent a user's logged-in state. 
+The "Local Logout"  button is limited, it does not end a session with the authorization server. So even though it logs you out of OIDC-Lab it doesn't log you out of the authorization server.
 
-When you're exploring OPs it can be hard to keep track of which users are logged in, so it can be useful to be able to just remove all potentially relevant cookies. For that reason it is generally a good idea to use private browsing or incognito mode, because you'll always start with no cookies set.
+It is generally a good idea to use private browsing or incognito mode for OIDC-Lab in `oidc` mode, because you'll always start with no cookies set. 
 
 ## Using your own configuration repo
 
@@ -142,37 +177,6 @@ You need to add a line such as:
 ```
 
 This will mean that OIDC-Lab can run on example1.internal. You'll need to change BASE_URL in the .env file to use this domain. 
-
-## Reference for .env files
-
-Note the use of IDP_BASE_URL, AUHTORIZE_PATH, and TOKEN_PATH are deprecated. ISSUER should be used instead. ISSUER will trigger the use of the [OIDC Well Known Discovery Document](https://oauth.net/2/authorization-server-metadata/).   
-- Endpoints and other information such as public keys will be be obtained from the discovery document.
-- The public keys will be used to verify the tokens returned by the OP.
-- Not every OP provides a discovery document. For those servers which don't, continue to use IDP_BASE_URL with TOKEN_PATH and AUTHORIZE_PATH. 
-- ISSUER and IDP_BASE_URL are exclusive. If you specify both you'll get an error. 
-- If you use IDP_BASE_URL:
-  - You must specify TOKEN_PATH (and AUTHORIZE_PATH if mode is oidc)
-  - Token verification and potentially other features which rely on the discovery document won't be available.
-
-Parameter | Opt/Req| Meaning
---|--|--
-API_ENDPOINT-\<name> | Optional | API Endpoints that will be called with the access token as a bearer token.  Values of <name> can be any string.
-APP_TITLE | Optional | Title that will appear on the oidc mode home page
-AUTHORIZE_PATH | Required if IDP_BASE_URL and MODE is oidc| The path of authorization endpoint of the OP
-BASE_URL | Required | The URL under which OIDC-Lab pages appear
-CALL_BACK_PATH | Optional | By default the redirect_uri (OIDC callback) is `BASE_URL/oauth-callback`, but this parameter can be used to override it
-CERTS_FOLDER | Optional | Default is `certs`
-CLIENT_ID | Required | A client id registered on the OP
-CLIENT_SECRET | Required if the registered client is confidential | The corresponding client secret
-COOKIE_SECRET | Required | Used for encrypting local session cookies. The value of this isn't important unless you're thinking of exposing OIDC-Lab pages on the Internet (which is not recommended). 
-OUTGOING_HTTPS_SECURITY | Optional | If "none", potential security issues with requests to https: endpoints on the OP and on any API requests will be ignored, the requests are thereby made insecure. (The axios agent options this sets are rejectUnauthorized: false, and secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT)
-HOME_PATH | Optional | By default the home URL of the app is BASE_URL, this parameter can override it
-IDP_BASE_URL | Required if no ISSUER | Base URL of the OP
-ISSUER | Required if no IDP_BASE_URL | The domain of the OIDC discovery document 
-MODE | Required | oidc or m2m
-SCOPE | Required | Scope parameter to the authorization request
-SPIEL | Optional | A description that will appear on the OIDC mode home page
-TOKEN_PATH | Required if IDP_BASE_URL | The path of the token endpoint of the OP
 
 ## HTTPS and OIDC-Lab
 

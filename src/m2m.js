@@ -7,7 +7,7 @@ import getOutgoingRequestOpts from './abettors/outgoing-request-properties.js'
 
 async function run() {
     const idpProps = await idpPropertiesBuilder.buildStaticProperties({
-        mode: process.env.MODE,
+        mode: 'm2m',
         clientId: process.env.CLIENT_ID,
         clientSecret: process.env.CLIENT_SECRET,
         scope: process.env.SCOPE,
