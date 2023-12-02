@@ -1,14 +1,14 @@
 {
   "name": "oidc-lab",
   "type": "module",
-  "version": "1.0.0",
-  "description": "sample oidc node web app",
-  "main": "index.js",
+  "version": "0.1.0",
+  "description": "Configurable OIDC/OAuth2 client application",
+  "main": "lab.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "David Pickles",
+  "license": "MIT",
   "dependencies": {
     "axios": "^1.4.0",
     "dotenv": "^6.2.0",
