@@ -73,7 +73,7 @@ This gets a token and shows it on the console. There is no user interaction. The
 
 ## Reference
 
-OIDC-Lab is a configurable OIDC and OAuth2 client. Configuration is via .env files in sub-folders of the configuration folder; they contain environment variables.
+OIDC-Lab is a configurable OIDC and OAuth2 client. Configuration is by .env files containing environment variables.
 
 Usage: 
 
@@ -83,7 +83,7 @@ node lab <configuration path>[.env]"
 
 The '.env' at the end is optional, if you don't supply it OIDC-Lab infers it.
 
-OIDC-Lab can run in two modes `oidc`  and `m2m`: `oidc` mode exerciseOIDC authorization code flow, `m2m` OAuth2 client credentials flow. For authorization code flow, OIDC-Lab acts as a web server. For client credentials flow it is a purely command line application. Which of these modes OIDC-Lab runs in is determined by the SCOPE variable,  if it contains 'openid', the mode is `oidc` if not, it's `m2m`. There is a MODE variable which can be used to override this behaviour, but this is likely to return an error from the authorization server. 
+OIDC-Lab can run in two modes `oidc`  and `m2m`: `oidc` mode exercises OIDC authorization code flow, `m2m` OAuth2 client credentials flow. For authorization code flow, OIDC-Lab acts as a web server. For client credentials flow it is a purely command line application. Which of these modes OIDC-Lab runs in is determined by the SCOPE variable,  if it contains 'openid', the mode is `oidc` if not, it's `m2m`. There is a MODE variable which can be used to override this behaviour, but you probably don't want to do this as it's likely to return an error from the authorization server. 
 
 You normally specify the authorization server with the ISSUER variable: this will make OIDC-Lab use the server's [OIDC Well Known Discovery Document](https://oauth.net/2/authorization-server-metadata/).  If this document isn't available, or for whatever reason you don't want to use it, you can use the variables 
 IDP_BASE_URL, AUHTORIZE_PATH, and TOKEN_PATH instead. ISSUER and IDP_BASE_URL are exclusive. If you specify both you'll get an error. With ISSUER:
@@ -101,14 +101,14 @@ APP_TITLE | Optional | Title that will appear on the `oidc` mode home page
 AUTHORIZE_PATH | Required if IDP_BASE_URL and mode is `oidc`| The path of authorization endpoint of the authorization server.
 BASE_URL | Required for `oidc` mode | The URL under which OIDC-Lab pages appear.
 CALL_BACK_PATH | Optional | By default the redirect_uri (OIDC callback) is `BASE_URL/oauth-callback`, but this parameter can be used to override it
-CERTS_FOLDER | Optional | Default is `certs`
+CERTS_FOLDER | Optional | Default is `certs`. See [CERTIFICATES](./certs/CERTIFICATES.md)
 CLIENT_ID | Required | A client id registered on the authorization server.
 CLIENT_SECRET | Required if the registered client is confidential | The corresponding client secret
 COOKIE_SECRET | Required | Used for encrypting local session cookies. The value of this isn't important unless you're thinking of exposing OIDC-Lab pages on the Internet (which is not recommended). 
 OUTGOING_HTTPS_SECURITY | Optional | If "none", potential security issues with outgoing requests to https endpoints will be ignored. That includes requests to the authorization server, and to any API endpoints. The requests are thereby made insecure. (The axios agent options this sets are rejectUnauthorized: false, and secureOptions: crypto.constants.SSL_OP_LEGACY_SERVER_CONNECT). Sometimes the network you're on makes this unavoidable.
 HOME_PATH | Optional | By default the home URL of the app is BASE_URL, this parameter can override it
 IDP_BASE_URL | Required if no ISSUER | Base URL of the authorization server.
-ISSUER | Required if no IDP_BASE_URL | The domain of the OIDC discovery document 
+ISSUER | Required if no IDP_BASE_URL | The origin URL of of the OIDC discovery document. The discovery document is assumed to be at `ISSUER/.well-known/openid-configuration`
 MODE | Optional | oidc or m2m. This is rarely needed: `oidc` mode is selected if SCOPE contains 'openid', `m2m` mode is selected otherwise.  
 SCOPE | Required | Scope parameter to the authorization request. It is a space separated list of scopes. If it contains 'openid', `oidc` mode is selected, if not `m2m` mode is used.
 SPIEL | Optional | A description that will appear on the `oidc` mode home page
@@ -133,7 +133,7 @@ It is generally a good idea to use private browsing or incognito mode for OIDC-L
 
 ## Using your own configuration repo
 
-You can manage your own .env files. Because .env files typically contain secrets they must not be stored in a code repo. They are excluded by a .gitignore rule.
+You will probably want to manage your own .env files. Because .env files typically contain secrets they must not be stored in a code repo. They are excluded by a .gitignore rule.
 
 It is good practice to store the configurations as env.template files, with client and cookie secrets removed. 
 
@@ -159,7 +159,7 @@ You need to add a line such as:
 127.0.0.1     example1.internal
 ```
 
-This will mean that OIDC-Lab can run on example1.internal. You'll need to change BASE_URL in the .env file to use this domain. 
+This will mean that OIDC-Lab can run locally on example1.internal. You'll need to change BASE_URL in the .env file to use this domain. 
 
 ## HTTPS and OIDC-Lab
 
