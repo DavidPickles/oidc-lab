@@ -78,7 +78,7 @@ OIDC-Lab is a configurable OIDC and OAuth2 client. Configuration is by .env file
 Usage: 
 
 ```
-node lab <configuration path>[.env]"
+node lab <configuration path>[.env]
 ```
 
 The '.env' at the end is optional, if you don't supply it OIDC-Lab infers it.
