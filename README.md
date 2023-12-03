@@ -109,7 +109,8 @@ OUTGOING_HTTPS_SECURITY | Optional | If "none", potential security issues with o
 HOME_PATH | Optional | By default the home URL of the app is BASE_URL, this parameter can override it
 IDP_BASE_URL | Required if no ISSUER | Base URL of the authorization server.
 ISSUER | Required if no IDP_BASE_URL | The origin URL of of the OIDC discovery document. The discovery document is assumed to be at `ISSUER/.well-known/openid-configuration`
-MODE | Optional | oidc or m2m. This is rarely needed: `oidc` mode is selected if SCOPE contains 'openid', `m2m` mode is selected otherwise.  
+MODE | Optional | oidc or m2m. This is rarely needed: `oidc` mode is selected if SCOPE contains 'openid', `m2m` mode is selected otherwise. 
+OTHER_PARAMS | Optional | In oidc mode, any additional query parameters for in the authorize request. Must start with an '&', for example `&param1=val1&param2=val2`
 SCOPE | Required | Scope parameter to the authorization request. It is a space separated list of scopes. If it contains 'openid', `oidc` mode is selected, if not `m2m` mode is used.
 SPIEL | Optional | A description that will appear on the `oidc` mode home page
 TOKEN_PATH | Required if IDP_BASE_URL | The path of the token endpoint of the authorization server
