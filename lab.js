@@ -1,9 +1,9 @@
 import path, { dirname } from 'path'
-import { fileURLToPath } from 'url'
 import { existsSync, readFileSync } from 'fs';
 import dotenv from 'dotenv'
 
-console.log('OIDC-Lab version:', getVersion())
+const pkg = getPackage()
+console.log('OIDC-Lab version:', pkg.version)
 if (process.argv.length !== 3) {
    usage()
    process.exit(0)
@@ -11,19 +11,17 @@ if (process.argv.length !== 3) {
 if (process.argv[2] === '-v' || process.argv[2] === '--version') {
     process.exit(0)
 }
-run({ configDirName: process.argv[2] })
+const envPath = process.argv[2].endsWith('.env') ? process.argv[2] : path.join( process.argv[2], '.env' )
+if (!existsSync(envPath)) {
+    console.error(`File not found: ${envPath}`)
+    usage()
+    process.exit(1)
+}
+dotenv.config({ path: envPath })   
+run()
 
 
-async function run({configDirName})  {
-    const configPath = path.join(
-        dirname(fileURLToPath(import.meta.url)), './configs', configDirName
-    )
-    if (!existsSync(configPath)) {
-        console.error(`No directory: ${configPath}`)
-        usage()
-        return
-    }
-    dotenv.config({ path: `${configPath}/.env`})   
+async function run()  {
     const mode = getMode()
     await import(`./src/${mode}.js`)
 }
@@ -42,14 +40,14 @@ function getMode() {
     } 
 } 
 
-function getVersion() {
+function getPackage() {
     try {
-      return JSON.parse(readFileSync('./package.json')).version
-    } catch (err) {
-      console.error('Unable to read package.json:', err);
-    }
+        return JSON.parse(readFileSync('./package.json'))
+      } catch (err) {
+        console.error('Unable to read package.json:', err);
+      }
 }
 
 function usage() {
-    console.log("Usage: node ./app.js <config dir>")
+    console.log("Usage: node lab <configuration path>[.env]")
 }

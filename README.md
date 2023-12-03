@@ -4,14 +4,13 @@
 
 OIDC-Lab is a configurable OAuth2 client which can be used to demonstrate and test [OAuth2 Authorization Servers and OpenId Providers](docs/OAuth-OIDC-Overview.md). 
 
-**The code in this repo is for demonstration and testing purposes only it is not for production use.**
+**The code in this repo is for demonstrating and testing OIDC and OAuth2, not for implementing these protocols in production.**
 
 * [System Requirements](#system-requirements)
 * [Install](#install)
 * [Try it out](#try-it-out)
-   + [1. Configure](#1-configure)
-   + [2.Authorization Code Flow](#2authorization-code-flow)
-   + [3. Client Credentials Flow](#3-client-credentials-flow)
+   + [Authorization Code Flow](#authorization-code-flow)
+   + [Client Credentials Flow](#client-credentials-flow)
 * [Reference](#reference)
 * [Using the access token as a bearer token. ](#using-the-access-token-as-a-bearer-token)
 * [Cookies and Logout](#cookies-and-logout)
@@ -24,7 +23,7 @@ OIDC-Lab is a configurable OAuth2 client which can be used to demonstrate and te
 - [Git](https://git-scm.com/downloads)
 - [Node.js](https://nodejs.org/en)
 
-Tested with Node v17, v18 and v19; it'll probably work with earlier versions too. 
+Tested with Node v17, v18 and v19; it'll probably work with earlier and later versions too. (Though it uses ECM, so not versions earlier than 12.)
 
 ## Install
 
@@ -36,38 +35,14 @@ npm install
 
 ## Try it out
 
-OIDC-Lab is a configurable OAuth2 client. Configuration files are .env files in sub-folders of the `configs` folder. You  manage your own configurations in `configs`, but two sample .env templates are provided to show how things work.  Both samples connect to [Duende's Public Demo Server](https://demo.duendesoftware.com/); one sample demonstrates OIDC Authorization Code Flow, the other demonstrates OAuth2 Client Credentials Flow. 
+OIDC-Lab is a configurable OAuth2 client. Configuration files are .env files. You can manage your own configurations but two sample .env files are provided to show how things work.  Both samples connect to [Duende's Public Demo Server](https://demo.duendesoftware.com/); one sample demonstrates OIDC Authorization Code Flow, the other demonstrates OAuth2 Client Credentials Flow. 
 
-### 1. Configure
-
-```
-mkdir configs
-```
-
-Then copy the folders in `config-samples` to `configs`. 
-
-```
-cp -r config-samples/* configs
-```
-
-You now have two folders containing .env  files. 
-
-```
-configs/duende-demo-server
-   .env
-configs/m2m-deunde-demo-server
-   .env
-```
-
-In general it's bad practice to store .env files in source control because they contain secrets. However Duende's public demo advertises its client secret; so in this case it really isn't secret at all. 
-
-
-### 2.Authorization Code Flow
+### Authorization Code Flow
 
 To demonstrate user-based authentication:
 
 ```
-node lab "duende-demo-server"
+node lab confg-samples/duende-demo-server
 ```
 
 Then point your browser at http://localhost:9023. You should see something like this:
@@ -84,12 +59,12 @@ After you login, your page should look something like this:
 
 ![lab-screenshot](./img/lab-screenshot-3.png)
 
-### 3. Client Credentials Flow
+### Client Credentials Flow
 
 To demonstrate machine-to-machine authentication:
 
 ```
-node lab "m2m-duende-demo-server"
+node lab config-samples/m2m-duende-demo-server
 ```
 
 This gets a token and shows it on the console. There is no user interaction. The output should look like this:
@@ -98,9 +73,17 @@ This gets a token and shows it on the console. There is no user interaction. The
 
 ## Reference
 
-OIDC-Lab is a configurable OIDC and OAuth2 client. Configuration is via .env files in sub-folders of the `configs` folder; they contain environment variables.
- 
- OIDC-Lab can run in two modes `oidc`  and `m2m`: `oidc` mode exercises OIDC authorization code flow, `m2m` OAuth2 client credentials flow. For authorization code flow, OIDC-Lab acts as a web server. For client credentials flow it is a purely command line application. Which of these modes OIDC-Lab runs in is determined by the SCOPE variable,  if it contains 'openid', the mode is `oidc` if not, it's `m2m`. There is a MODE variable which can be used to override this behaviour, but this is likely to return an error from the authorization server. 
+OIDC-Lab is a configurable OIDC and OAuth2 client. Configuration is via .env files in sub-folders of the configuration folder; they contain environment variables.
+
+Usage: 
+
+```
+node lab <configuration path>[.env]"
+```
+
+The '.env' at the end is optional, if you don't supply it OIDC-Lab infers it.
+
+OIDC-Lab can run in two modes `oidc`  and `m2m`: `oidc` mode exerciseOIDC authorization code flow, `m2m` OAuth2 client credentials flow. For authorization code flow, OIDC-Lab acts as a web server. For client credentials flow it is a purely command line application. Which of these modes OIDC-Lab runs in is determined by the SCOPE variable,  if it contains 'openid', the mode is `oidc` if not, it's `m2m`. There is a MODE variable which can be used to override this behaviour, but this is likely to return an error from the authorization server. 
 
 You normally specify the authorization server with the ISSUER variable: this will make OIDC-Lab use the server's [OIDC Well Known Discovery Document](https://oauth.net/2/authorization-server-metadata/).  If this document isn't available, or for whatever reason you don't want to use it, you can use the variables 
 IDP_BASE_URL, AUHTORIZE_PATH, and TOKEN_PATH instead. ISSUER and IDP_BASE_URL are exclusive. If you specify both you'll get an error. With ISSUER:
@@ -150,7 +133,7 @@ It is generally a good idea to use private browsing or incognito mode for OIDC-L
 
 ## Using your own configuration repo
 
-You can use your own repo in the `configs` folder. However because .env files typically contain secrets they, must not be stored in the code repo. They are excluded by a .gitignore rule.
+You can manage your own .env files. Because .env files typically contain secrets they must not be stored in a code repo. They are excluded by a .gitignore rule.
 
 It is good practice to store the configurations as env.template files, with client and cookie secrets removed. 
 
