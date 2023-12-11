@@ -45,7 +45,7 @@ async function run() {
         tokenPath: process.env.TOKEN_PATH,
         authorizationPath: process.env.AUTHORIZE_PATH,
         outgoingRequestOpts: appProperties.outgoingRequestOpts,
-    })  
+    })
     app.locals.verifier = new Verifier(app.locals.oidcProperties.jwksUri)
     const baseUrl = new URL(appProperties.baseUrl)
     const server = baseUrl.protocol === 'https:' ? 
@@ -94,6 +94,7 @@ app.get('/login', async (req, res) => {
     const oidcProps = app.locals.oidcProperties
     const pkce = await pkceChallenge()
     req.session.pkce_verifier = pkce.code_verifier
+
     let authorizeUrl = `${oidcProps.authorizationEndpoint}?` +
         `client_id=${oidcProps.clientId}&` +
         `response_type=code&` +
@@ -101,7 +102,7 @@ app.get('/login', async (req, res) => {
         `scope=${oidcProps.scope}&` +
         `code_challenge=${pkce.code_challenge}&` +
         'code_challenge_method=S256' +
-        oidcProps.otherParams ?? ''
+        (oidcProps.otherParams ?? '')
     console.log('authorize url',authorizeUrl)
     req.session.authUrl = authorizeUrl
     res.redirect(authorizeUrl)

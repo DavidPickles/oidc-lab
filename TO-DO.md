@@ -1,5 +1,6 @@
 - add nonce and state
 - make nonce and state and pkce optional
+- allow alternative code_challenge methods?
 - make other params a bit nicer (eg infer leading ampersand)
 - Proper logging (with configurable log levels in .env)
 - improve error handling, do I always want a stack trace? + Axios errors are ridiculously verbose. Maybe error detail should be a function of logging level? Or a env variable error detail?

@@ -83,7 +83,7 @@ node lab <path/to/.env>
 
 Including the '/.env' at the end of the configuration file path is optional, if you don't supply it it's inferred. 
 
-OIDC-Lab can run in two modes `oidc`  and `m2m`: `oidc` mode exercises OIDC authorization code flow, `m2m` OAuth2 client credentials flow. For authorization code flow, OIDC-Lab acts as a web server. For client credentials flow it is a purely command line application. Which of these modes OIDC-Lab runs in is determined by the SCOPE variable,  if it contains 'openid', the mode is `oidc` if not, it's `m2m`. There is a MODE variable which can be used to override this behaviour, but you probably don't want to do that as it's likely to return an error from the authorization server. 
+OIDC-Lab can run in two modes `oidc`  and `m2m`: `oidc` mode exercises OIDC authorization code flow, `m2m` OAuth2 client credentials flow. For authorization code flow, OIDC-Lab acts as a web server. For client credentials flow it is a purely command line application. Which of these modes OIDC-Lab runs in is determined by the SCOPE variable,  if it contains 'openid', the mode is `oidc` if not, it's `m2m`. There is a MODE variable which can be used to override this behaviour, but you probably don't want to do that because if MODE is inconsistent with SCOPE, you're likely to end up with an error from the authorization server. 
 
 You normally specify the authorization server with the ISSUER variable: this will make OIDC-Lab use the server's [OIDC Well Known Discovery Document](https://oauth.net/2/authorization-server-metadata/).  If this document isn't available, or for whatever reason you don't want to use it, you can use the variables 
 IDP_BASE_URL, AUHTORIZE_PATH, and TOKEN_PATH instead. ISSUER and IDP_BASE_URL are exclusive. If you specify both you'll get an error. With ISSUER:
@@ -93,6 +93,8 @@ IDP_BASE_URL, AUHTORIZE_PATH, and TOKEN_PATH instead. ISSUER and IDP_BASE_URL ar
 If you use IDP_BASE_URL:
 - You must specify TOKEN_PATH (and AUTHORIZE_PATH if mode is oidc)
 - Token verification and potentially other features which rely on the discovery document won't be available.
+
+In `oidc` mode, most authorization servers will need to have a registered redirect URI which forms the location header in the redirect response after authentication is successful. By default OIDC-Lab's redirect URI is BASE_URL/oauth-callback. If for some reason you need to change that default, use CALL_BACK_PATH.
 
 Parameter | Opt/Req| Meaning
 --|--|--
