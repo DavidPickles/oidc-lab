@@ -6,17 +6,18 @@ OIDC-Lab is a configurable OAuth2 client which can be used to demonstrate and te
 
 **The code in this repo is for demonstrating and testing OIDC and OAuth2, not for implementing these protocols in production.**
 
-* [System Requirements](#system-requirements)
-* [Install](#install)
-* [Try it out](#try-it-out)
-   + [Authorization Code Flow](#authorization-code-flow)
-   + [Client Credentials Flow](#client-credentials-flow)
-* [Reference](#reference)
-* [Using the access token as a bearer token. ](#using-the-access-token-as-a-bearer-token)
-* [Cookies and Logout](#cookies-and-logout)
-* [Using your own configuration repo](#using-your-own-configuration-repo)
-* [Hosts other than localhost](#hosts-other-than-localhost)
-* [HTTPS and OIDC-Lab](#https-and-oidc-lab)
+- [OIDC Lab](#oidc-lab)
+  - [System Requirements](#system-requirements)
+  - [Install](#install)
+  - [Try it out](#try-it-out)
+    - [Authorization Code Flow](#authorization-code-flow)
+    - [Client Credentials Flow](#client-credentials-flow)
+  - [Reference](#reference)
+  - [Using the access token as a bearer token](#using-the-access-token-as-a-bearer-token)
+  - [Cookies and Logout](#cookies-and-logout)
+  - [Using your own configuration repo](#using-your-own-configuration-repo)
+  - [Hosts other than localhost](#hosts-other-than-localhost)
+  - [HTTPS and OIDC-Lab](#https-and-oidc-lab)
 
 ## System Requirements
 
@@ -42,7 +43,7 @@ OIDC-Lab is a configurable OAuth2 client. Configuration files are .env files. Yo
 To demonstrate user-based authentication:
 
 ```
-node lab confg-samples/duende-demo-server
+node lab config-samples/duende-demo-server
 ```
 
 Then point your browser at http://localhost:9023. You should see something like this:
