@@ -17,7 +17,8 @@ async function run() {
         // either issuer or idpBaseUrl  but not both
         idpBaseUrl: process.env.IDP_BASE_URL,
         // if you have and idpBaseUrl you must have a token path
-        tokenPath: process.env.TOKEN_PATH
+        tokenPath: process.env.TOKEN_PATH,
+        outgoingRequestOpts: getOutgoingRequestOpts({ httpsSecurity: process.env.OUTGOING_HTTPS_SECURITY })
     })  
     console.log("jwksUri", idpProps.jwksUri)
     const verifier = new Verifier(idpProps.jwksUri)
@@ -82,4 +83,8 @@ function getOtherParams(str) {
     return result;
 }
 
-run()
+
+run().catch(err => {
+    console.error(err);
+    process.exit(1);
+})
